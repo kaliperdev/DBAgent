@@ -1,4 +1,5 @@
 
+
 # Display conversation history
 import pandas as pd
 import openai
@@ -8,11 +9,11 @@ import streamlit as st
 openai.api_key = 'sk-gpt-service-account-OLZzNlZl96FVr8Uxa3QjT3BlbkFJD24Chu1eRPerwHmWPYra'
 
 # Load schema CSV
-schema_file_path = 'Schema.csv'
+schema_file_path = '/Users/sunnykumar/Downloads/Schema.csv'
 schema_df = pd.read_csv(schema_file_path)
 
 # Load examples CSV
-examples_file_path = 'Examples.csv'
+examples_file_path = '/Users/sunnykumar/Downloads/Examples.csv'
 examples_df = pd.read_csv(examples_file_path)
 
 # Prepare schema information
