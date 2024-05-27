@@ -74,7 +74,7 @@ if st.button("Generate SQL Query"):
 
 # Display chat history
 st.write("### Chat History")
-for message in st.session_state.messages:
+for message in reversed(st.session_state.messages):
     if message['role'] == 'user':
         st.write(f"**User:** {message['content']}")
     else:
