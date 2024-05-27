@@ -66,7 +66,7 @@ if 'messages' not in st.session_state:
 
 user_question = st.text_input("Enter your question:")
 
-if st.button("Generate SQL Query"):
+if st.button("Send"):
     if user_question:
         sql_query = generate_sql(user_question)
         st.session_state.messages.append({"role": "user", "content": user_question})
