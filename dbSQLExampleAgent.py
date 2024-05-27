@@ -63,8 +63,6 @@ st.title("SQL Query Generator")
 if 'messages' not in st.session_state:
     st.session_state.messages = []
 
-# Streamlit interface
-st.title("SQL Query Generator")
 
 user_question = st.text_input("Enter your question:")
 
