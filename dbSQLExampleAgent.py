@@ -63,24 +63,22 @@ st.title("SQL Query Generator")
 if 'messages' not in st.session_state:
     st.session_state.messages = []
 
+# Streamlit interface
+st.title("SQL Query Generator")
+
 user_question = st.text_input("Enter your question:")
 
-if st.button("Send"):
+if st.button("Generate SQL Query"):
     if user_question:
-        # Add user question to conversation history
-        st.session_state['messages'].append({"role": "user", "content": user_question})
+        sql_query = generate_sql(user_question)
+        st.session_state.messages.append({"role": "user", "content": user_question})
+        st.session_state.messages.append({"role": "assistant", "content": sql_query})
 
-        # Generate SQL query based on the conversation history
-        conversation = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state['messages']])
-        sql_query = generate_sql(conversation)
-
-        # Add the generated SQL query to the conversation history
-        st.session_state['messages'].append({"role": "assistant", "content": sql_query})
-
-        # Display the generated SQL query
-        st.write("### Generated SQL Query")
-        st.code(sql_query, language='sql')
+# Display chat history
+st.write("### Chat History")
+for message in st.session_state.messages:
+    if message['role'] == 'user':
+        st.write(f"**User:** {message['content']}")
     else:
-        st.write("Please enter a question to generate an SQL query.")
-
-
+        st.write(f"**Assistant:** {message['content']}")
+        st.code(message['content'], language='sql')
