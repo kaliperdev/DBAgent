@@ -6,7 +6,7 @@ import openai
 import streamlit as st
 
 # Initialize OpenAI API
-openai.api_key = ''
+openai.api_key = 'sk-gpt-service-account-OLZzNlZl96FVr8Uxa3QjT3BlbkFJD24Chu1eRPerwHmWPYra'
 
 # Load schema CSV
 schema_file_path = 'Schema.csv'
