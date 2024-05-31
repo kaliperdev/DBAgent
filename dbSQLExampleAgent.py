@@ -153,7 +153,7 @@ if openai.api_key:
                     st.session_state.messages.append({"role": "assistant", "content": corrected_sql_query_text})
             else:
                 st.write("### Query Result")
-                st.write(result)
+                #st.write(result)
                 st.session_state.messages.append({"role": "assistant", "content": result})
 
     # Display chat history
