@@ -92,11 +92,11 @@ def extract_query_from_message(content):
 
 if openai.api_key:
     # Load schema CSV
-    schema_file_path = '/Users/sunnykumar/Documents/Python/DBAgent/Without FineTuning/Schema.csv'
+    schema_file_path = 'Schema.csv'
     schema_df = pd.read_csv(schema_file_path)
 
     # Load examples CSV
-    examples_file_path = '/Users/sunnykumar/Documents/Python/DBAgent/Without FineTuning/Examples.csv'
+    examples_file_path = 'Examples.csv'
     examples_df = pd.read_csv(examples_file_path)
 
     # Prepare schema information
