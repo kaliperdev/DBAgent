@@ -17,7 +17,7 @@ SNOWFLAKE_USER = st.session_state.SF_User
 SNOWFLAKE_PASSWORD = st.session_state.SF_Password
 SNOWFLAKE_ACCOUNT = st.session_state.SF_Account
 SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
-SNOWFLAKE_ROLE = "Rudder"
+SNOWFLAKE_ROLE = "RUDDER"
 
 # Function to set API key
 def set_api_key():
