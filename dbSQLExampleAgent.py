@@ -9,9 +9,9 @@ import snowflake.connector
 if 'messages' not in st.session_state:
     st.session_state.messages = []
 
-st.session_state.SF_User = []
-st.session_state.SF_Password = []
-st.session_state.SF_Account = []
+# st.session_state.SF_User = []
+# st.session_state.SF_Password = []
+# st.session_state.SF_Account = []
 
 SNOWFLAKE_USER = st.session_state.SF_User
 SNOWFLAKE_PASSWORD = st.session_state.SF_Password
