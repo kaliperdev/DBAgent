@@ -17,6 +17,7 @@ SNOWFLAKE_USER = st.session_state.SF_User
 SNOWFLAKE_PASSWORD = st.session_state.SF_Password
 SNOWFLAKE_ACCOUNT = st.session_state.SF_Account
 SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
+SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
 SNOWFLAKE_ROLE = "RUDDER"
 
 # Function to set API key
@@ -36,6 +37,7 @@ def execute_query(query):
             password=SNOWFLAKE_PASSWORD,
             account=SNOWFLAKE_ACCOUNT,
             warehouse=SNOWFLAKE_WAREHOUSE,
+            database=SNOWFLAKE_DATABASE,
             role=SNOWFLAKE_ROLE
         )
         cursor = conn.cursor()
