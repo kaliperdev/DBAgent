@@ -124,7 +124,7 @@ if openai.api_key:
     for _, row in examples_df.iterrows():
         examples += f"Question: {row['Question']}\nQuery: {row['Query']}\n\n"
 
-    st.title("Nurp BI Automation")
+    st.title("BI Automation")
 
     # Streamlit interface
     user_question = st.text_input("Define your Marketing Analytics Requirements:")
