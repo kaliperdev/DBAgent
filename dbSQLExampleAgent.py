@@ -21,7 +21,6 @@ def set_sf_pass():
         st.session_state.sf_password = ""
 
 SNOWFLAKE_USER = "Rahul"
-SNOWFLAKE_PASSWORD = st.session_state.SF_Password
 SNOWFLAKE_ACCOUNT = "zt30947.us-east-2.aws"
 SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
 SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
