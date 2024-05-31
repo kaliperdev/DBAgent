@@ -15,9 +15,6 @@ if 'messages' not in st.session_state:
 
 # Check and prompt for Snowflake credentials
 
-if 'SF_Password' not in st.session_state:
-    st.session_state.SF_Password = st.text_input("Enter Snowflake Password:", type="password")
-
 SNOWFLAKE_USER = "Rahul"
 SNOWFLAKE_PASSWORD = st.session_state.SF_Password
 SNOWFLAKE_ACCOUNT = "zt30947.us-east-2.aws"
