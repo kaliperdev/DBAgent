@@ -8,6 +8,10 @@ import os
 if 'messages' not in st.session_state:
     st.session_state.messages = []
 
+st.session_state.SF_User = []
+st.session_state.SF_Password = []
+st.session_state.SF_Account = []
+
 # Function to set API key
 def set_api_key():
     if 'api_key' in st.session_state:
