@@ -10,13 +10,14 @@ def set_api_key():
     else:
         st.session_state.api_key = ""
 
-SNOWFLAKE_USER = st.session_state.SF_User
-SNOWFLAKE_PASSWORD = st.session_state.SF_Password
-SNOWFLAKE_ACCOUNT = st.session_state.SF_Account
-SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
-SNOWFLAKE_ROLE = "Rudder"
+
 
 def execute_query(query):
+    SNOWFLAKE_USER = st.session_state.SF_User
+    SNOWFLAKE_PASSWORD = st.session_state.SF_Password
+    SNOWFLAKE_ACCOUNT = st.session_state.SF_Account
+    SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
+    SNOWFLAKE_ROLE = "Rudder"
     try:
         conn = snowflake.connector.connect(
             user=SNOWFLAKE_USER,
