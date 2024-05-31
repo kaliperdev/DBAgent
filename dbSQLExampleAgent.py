@@ -163,7 +163,7 @@ if openai.api_key:
             st.write(f"**User:** {message['content']}")
         else:
             #st.write(f"**Assistant:** {message['content']}")
-            #st.code(message['content'], language='sql')
+            st.code(message['content'], language='sql')
             st.write(result)
 else:
     st.warning("Please enter your OpenAI API key to proceed.")
