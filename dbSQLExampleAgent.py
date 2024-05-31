@@ -13,6 +13,21 @@ if 'messages' not in st.session_state:
 # st.session_state.SF_Password = []
 # st.session_state.SF_Account = []
 
+# Check and prompt for Snowflake credentials
+if 'SF_User' not in st.session_state:
+    st.session_state.SF_User = st.text_input("Enter Snowflake User:")
+if 'SF_Password' not in st.session_state:
+    st.session_state.SF_Password = st.text_input("Enter Snowflake Password:", type="password")
+if 'SF_Account' not in st.session_state:
+    st.session_state.SF_Account = st.text_input("Enter Snowflake Account:")
+
+SNOWFLAKE_USER = st.session_state.SF_User
+SNOWFLAKE_PASSWORD = st.session_state.SF_Password
+SNOWFLAKE_ACCOUNT = st.session_state.SF_Account
+SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
+SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
+SNOWFLAKE_ROLE = "Rudder"
+
 SNOWFLAKE_USER = st.session_state.SF_User
 SNOWFLAKE_PASSWORD = st.session_state.SF_Password
 SNOWFLAKE_ACCOUNT = st.session_state.SF_Account
