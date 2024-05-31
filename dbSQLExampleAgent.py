@@ -13,6 +13,12 @@ st.session_state.SF_User = []
 st.session_state.SF_Password = []
 st.session_state.SF_Account = []
 
+SNOWFLAKE_USER = st.session_state.SF_User
+SNOWFLAKE_PASSWORD = st.session_state.SF_Password
+SNOWFLAKE_ACCOUNT = st.session_state.SF_Account
+SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
+SNOWFLAKE_ROLE = "Rudder"
+
 # Function to set API key
 def set_api_key():
     if 'api_key' in st.session_state:
@@ -23,11 +29,7 @@ def set_api_key():
 
 
 def execute_query(query):
-    SNOWFLAKE_USER = st.session_state.SF_User
-    SNOWFLAKE_PASSWORD = st.session_state.SF_Password
-    SNOWFLAKE_ACCOUNT = st.session_state.SF_Account
-    SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
-    SNOWFLAKE_ROLE = "Rudder"
+
     try:
         conn = snowflake.connector.connect(
             user=SNOWFLAKE_USER,
