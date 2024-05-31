@@ -2,6 +2,7 @@ import pandas as pd
 import openai
 import streamlit as st
 import os
+import snowflake.connector
 
 
 # Ensure session state is initialized at the very beginning
