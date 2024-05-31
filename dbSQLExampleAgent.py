@@ -14,6 +14,11 @@ if 'messages' not in st.session_state:
 # st.session_state.SF_Account = []
 
 # Check and prompt for Snowflake credentials
+def set_sf_pass():
+    if 'SF_Password' in st.session_state:
+        SNOWFLAKE_PASSWORD = st.session_state.SF_Password
+    else:
+        st.session_state.SF_Password = ""
 
 SNOWFLAKE_USER = "Rahul"
 SNOWFLAKE_PASSWORD = st.session_state.SF_Password
