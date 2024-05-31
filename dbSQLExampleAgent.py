@@ -3,6 +3,11 @@ import openai
 import streamlit as st
 import os
 
+
+# Ensure session state is initialized at the very beginning
+if 'messages' not in st.session_state:
+    st.session_state.messages = []
+
 # Function to set API key
 def set_api_key():
     if 'api_key' in st.session_state:
