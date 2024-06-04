@@ -166,5 +166,5 @@ if openai.api_key:
             st.code(message['content'], language='sql')
             st.write(result)
 else:
-    st.warning(f"Please enter your OpenAI API key to proceed. {st.session_state.api_key}")
+    st.warning(f"Please enter your OpenAI API key to proceed. {st.secrets.credentials.api_key}")
 
