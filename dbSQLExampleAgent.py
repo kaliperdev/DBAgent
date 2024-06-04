@@ -94,8 +94,18 @@ def handle_error(query, error):
 
 def extract_query_from_message(content):
     if "Generated SQL Query:" in content:
-        return content.split("Generated SQL Query:", 1)[1].strip()
+        query_part = content.split("Generated SQL Query:", 1)[1].strip()
+        
+        # Case 2 and 3: Handle queries enclosed in triple backticks
+        if query_part.startswith("```sql") and query_part.endswith("```"):
+            return query_part[6:-3].strip()
+        elif query_part.startswith("```") and query_part.endswith("```"):
+            return query_part[3:-3].strip()
+        
+        # Case 1: Plain query after the "Generated SQL Query:" string
+        return query_part
     return content
+
 
 if openai.api_key:
     # Load schema CSV
