@@ -166,9 +166,9 @@ if openai.api_key:
             st.write(f"**User:** {message['content']}")
         else:
             #st.write(f"**Assistant:** {message['content']}")
-            
-            fig = px.line(result)  # Example chart, customize based on your data
-            st.plotly_chart(fig)
+            try:
+                fig = px.line(result)  # Example chart, customize based on your data
+                st.plotly_chart(fig)
             st.code(message['content'], language='sql')
             st.write(result)
 else:
