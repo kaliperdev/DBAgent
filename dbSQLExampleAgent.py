@@ -70,16 +70,13 @@ def generate_sql(conversation):
 
 def handle_error(query, error):
     prompt = f"""
-    Given the following SQL, and the error from Snowflake. Resolve this. Reread the examples provided.
+    Given the following SQL, and the error from Snowflake. Resolve this.
 
     Error:
     {error}
 
     Code:
     {query}
-
-    Examples:
-    {examples}
 
     """
     response = openai.ChatCompletion.create(
