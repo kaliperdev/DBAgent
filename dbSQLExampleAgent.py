@@ -21,14 +21,6 @@ SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
 SNOWFLAKE_ROLE = "Rudder"
 
 openai.api_key = st.secrets.credentials.api_key
-# Function to set API key
-def set_api_key():
-    if 'api_key' in st.secrets.credentials:
-        openai.api_key = st.secrets.credentials.api_key
-    else:
-        st.secrets.credentials.api_key = ""
-
-
 
 def execute_query(query):
 
