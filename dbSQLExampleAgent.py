@@ -81,7 +81,7 @@ def generate_sql(conversation):
     response = openai.ChatCompletion.create(
         model="gpt-4-turbo",
         messages=full_prompt,
-        max_tokens=5000,
+        max_tokens=4000,
         temperature=0.5,
         n=1,
         stop=None
