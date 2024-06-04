@@ -167,7 +167,7 @@ if openai.api_key:
         else:
             #st.write(f"**Assistant:** {message['content']}")
             if not result.empty:
-                fig = px.line(result_df)  # Example chart, customize based on your data
+                fig = px.line(result)  # Example chart, customize based on your data
                 st.plotly_chart(fig)
             st.code(message['content'], language='sql')
             st.write(result)
