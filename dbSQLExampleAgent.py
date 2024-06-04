@@ -68,7 +68,7 @@ def generate_sql(conversation):
 
     # Calculate token count for each message
     token_count = sum([len(enc.encode(message["content"])) for message in full_prompt])
-    
+    st.write(token_count)
     # Print token count and full prompt for debugging
     print(f"Total token count: {token_count}")
     print("Full prompt being sent:")
