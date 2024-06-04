@@ -72,7 +72,7 @@ def generate_sql(conversation):
     # Print token count and full prompt for debugging
     print(f"Total token count: {token_count}")
     print("Full prompt being sent:")
-    st.write(full_prompt)
+    #st.write(full_prompt)
     
     # # Ensure token count is within the model's limit
     # if token_count > 4096:  # Adjust based on model's token limit (e.g., 4096 for GPT-4)
@@ -81,7 +81,7 @@ def generate_sql(conversation):
     response = openai.ChatCompletion.create(
         model="gpt-4-turbo",
         messages=full_prompt,
-        max_tokens=1000,
+        max_tokens=10000,
         temperature=0.5,
         n=1,
         stop=None
