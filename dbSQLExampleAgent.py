@@ -11,7 +11,7 @@ if 'messages' not in st.session_state:
 
 
 # Check and prompt for Snowflake credentials
-SNOWFLAKE_PASSWORD = st.secrets["sf_password"]
+SNOWFLAKE_PASSWORD = st.secrets.credentials["sf_password"]
 
 
 SNOWFLAKE_USER = "Rahul"
@@ -23,10 +23,10 @@ SNOWFLAKE_ROLE = "Rudder"
 
 # Function to set API key
 def set_api_key():
-    if 'api_key' in st.session_state:
-        openai.api_key = st.session_state.api_key
+    if 'api_key' in st.secrets.credentials:
+        openai.api_key = st.secrets.credentials.api_key
     else:
-        st.session_state.api_key = ""
+        st.secrets.credentials.api_key = ""
 
 
 
