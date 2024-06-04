@@ -23,10 +23,10 @@ SNOWFLAKE_ROLE = "Rudder"
 
 # Function to set API key
 def set_api_key():
-    if 'api_key' in st.session_state:
-        openai.api_key = st.session_state.api_key
+    if 'api_key' in st.secrets:
+        openai.api_key = st.secrets.api_key
     else:
-        st.session_state.api_key = ""
+        st.secrets.api_key = ""
 
 
 
