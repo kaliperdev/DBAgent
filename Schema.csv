@@ -3,7 +3,7 @@ RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS,properties_utm_current_bo
 RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS,properties_clickfunnel_id,Funnel ID associated with the contact,Hubspot User Info Table
 RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS,properties_email,Email address of the contact,Hubspot User Info Table
 RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS,properties_utm_content_current,Current UTM content,Hubspot User Info Table
-RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS,properties_hs_date_entered_contractsent,"Whenever there is a meeting scheduled, this column populates. So we can use this to count Scheduled Stage",Hubspot User Info Table
+RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS,properties_hs_date_entered_contractsent,"Whenever there is a meeting scheduled, this column populates. So we can use this to count Scheduled Stage",Hubspot User Info Table
 RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS,PROPERTIES_JOTFORM_RESULTS,"Qualified','ATA Lite Strat', 'Qualified+' filter to identify which users have qualified. Should be used to find Qualified Stage
 if not null then all those users have done Application. Should be used to find Application Stage",Hubspot User Info Table
 RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1,reports_sheet,Funnel Name,"Manually Updated Sheet to be used to match FunnelID with Funnel Name, and Funnel Group Name"
