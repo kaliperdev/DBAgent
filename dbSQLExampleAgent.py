@@ -11,7 +11,7 @@ if 'messages' not in st.session_state:
 
 
 # Check and prompt for Snowflake credentials
-SNOWFLAKE_PASSWORD = st.secrets.credentials["sf_password"]
+SNOWFLAKE_PASSWORD = st.secrets.credentials.sf_password
 
 
 SNOWFLAKE_USER = "Rahul"
@@ -166,5 +166,5 @@ if openai.api_key:
             st.code(message['content'], language='sql')
             st.write(result)
 else:
-    st.warning(f"Please enter your OpenAI API key to proceed. {st.secrets.credentials.api_key}")
+    st.warning(f"Please enter your OpenAI API key to proceed. {st.secrets.credentials.sf_password}")
 
