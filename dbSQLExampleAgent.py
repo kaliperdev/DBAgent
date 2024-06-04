@@ -74,9 +74,9 @@ def generate_sql(conversation):
     print("Full prompt being sent:")
     print(full_prompt)
     
-    # Ensure token count is within the model's limit
-    if token_count > 4096:  # Adjust based on model's token limit (e.g., 4096 for GPT-4)
-        raise ValueError("Prompt is too long and exceeds the token limit for the model.")
+    # # Ensure token count is within the model's limit
+    # if token_count > 4096:  # Adjust based on model's token limit (e.g., 4096 for GPT-4)
+    #     raise ValueError("Prompt is too long and exceeds the token limit for the model.")
     
     response = openai.ChatCompletion.create(
         model="gpt-4",
