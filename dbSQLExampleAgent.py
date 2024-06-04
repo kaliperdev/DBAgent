@@ -4,6 +4,7 @@ import streamlit as st
 import os
 import snowflake.connector
 import plotly.express as px
+import tiktoken
 
 
 # Ensure session state is initialized at the very beginning
@@ -56,12 +57,30 @@ def generate_sql(conversation):
     Conversation:
     {conversation}
     """
+
+    full_prompt = [
+        {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. These queries should follow format from examples and Schema file. Query should not be out of schema provided, this is most crucial, especially make sure of schema when you are giving join statements with ON clause, and filters. Dont Assume.  Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier, apart from text 'Generated SQL Query:', and don't write anything after the query ends."},
+        {"role": "user", "content": prompt}
+    ]
+
+    # Tokenizer
+    enc = tiktoken.get_encoding("cl100k_base")
+
+    # Calculate token count for each message
+    token_count = sum([len(enc.encode(message["content"])) for message in full_prompt])
+    
+    # Print token count and full prompt for debugging
+    print(f"Total token count: {token_count}")
+    print("Full prompt being sent:")
+    print(full_prompt)
+    
+    # Ensure token count is within the model's limit
+    if token_count > 4096:  # Adjust based on model's token limit (e.g., 4096 for GPT-4)
+        raise ValueError("Prompt is too long and exceeds the token limit for the model.")
+    
     response = openai.ChatCompletion.create(
         model="gpt-4",
-        messages=[
-            {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. These queries should follow format from examples and Schema file. Query should not be out of schema provided, this is most crucial, especially make sure of schema when you are giving join statements with ON clause, and filters. Dont Assume.  Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier, apart from text 'Generated SQL Query:', and don't write anything after the query ends."},
-            {"role": "user", "content": prompt}
-        ],
+        messages=full_prompt,
         max_tokens=1000,
         temperature=0.5,
         n=1,
