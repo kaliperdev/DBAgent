@@ -20,7 +20,7 @@ SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
 SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
 SNOWFLAKE_ROLE = "Rudder"
 
-
+openai.api_key = st.secrets.credentials.api_key
 # Function to set API key
 def set_api_key():
     if 'api_key' in st.secrets.credentials:
