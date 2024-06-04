@@ -3,6 +3,7 @@ import openai
 import streamlit as st
 import os
 import snowflake.connector
+import plotly.express as px
 
 
 # Ensure session state is initialized at the very beginning
@@ -165,6 +166,9 @@ if openai.api_key:
             st.write(f"**User:** {message['content']}")
         else:
             #st.write(f"**Assistant:** {message['content']}")
+            if not result.empty:
+                fig = px.line(result_df)  # Example chart, customize based on your data
+                st.plotly_chart(fig)
             st.code(message['content'], language='sql')
             st.write(result)
 else:
