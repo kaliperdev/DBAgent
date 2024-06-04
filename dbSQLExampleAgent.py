@@ -79,7 +79,7 @@ def generate_sql(conversation):
     #     raise ValueError("Prompt is too long and exceeds the token limit for the model.")
     
     response = openai.ChatCompletion.create(
-        model="gpt-4-turbo",
+        model="gpt-4o",
         messages=full_prompt,
         max_tokens=4000,
         temperature=0.5,
@@ -103,7 +103,7 @@ def handle_error(query, error):
 
     """
     response = openai.ChatCompletion.create(
-        model="gpt-4-turbo",
+        model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response, apart from text 'Generated SQL Query:' and don't write anything after the query ends."},
             {"role": "user", "content": prompt}
