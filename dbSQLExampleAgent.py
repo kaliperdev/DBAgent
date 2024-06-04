@@ -44,7 +44,7 @@ def execute_query(query):
 
 def generate_sql(conversation):
     prompt = f"""
-    You are an expert SQL query writer. Given the following schema and examples, generate a SQL query for the given question. Be mindful of the following: 1. The query should only contain tables and columns combinations as per the schema. For help in generating the query, refer to the examples.
+    You are an expert SQL query writer. Given the following schema and examples, generate a SQL query for the given question. Be mindful of the following: 1. The query should only contain tables and columns combinations as per the schema. For help in generating the query, refer to the examples. If there is no schema passed. Display message that no schema available for this query.
 
     Schema:
     {schema_info}
@@ -58,7 +58,7 @@ def generate_sql(conversation):
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[
-            {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. Also add 'Generated SQL Query:' term just before sql query to identify, and don't write anything after the query ends."},
+            {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards.  Also add 'Generated SQL Query:' term just before sql query to identify, and don't write anything after the query ends."},
             {"role": "user", "content": prompt}
         ],
         max_tokens=1000,
@@ -70,7 +70,7 @@ def generate_sql(conversation):
 
 def handle_error(query, error):
     prompt = f"""
-    Given the following SQL, and the error from Snowflake. Resolve this. Also add 'Generated SQL Query:' term just before sql query to identify, and don't write anything after the query ends.
+    Given the following SQL, and the error from Snowflake. Resolve this. Reread the examples provided.
 
     Error:
     {error}
@@ -78,11 +78,14 @@ def handle_error(query, error):
     Code:
     {query}
 
+    Examples:
+    {examples}
+
     """
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[
-            {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards."},
+            {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. Also add 'Generated SQL Query:' term just before sql query to identify, and don't write anything after the query ends."},
             {"role": "user", "content": prompt}
         ],
         max_tokens=1000,
