@@ -94,7 +94,7 @@ def handle_error(query, error):
 
 def extract_query_from_message(content):
     if "Generated SQL Query:" in content:
-        return content.split("Generated SQL Query:```sql", 1)[1].strip()
+        return content.split("Generated SQL Query:", 1)[1].strip()
     return content
 
 if openai.api_key:
