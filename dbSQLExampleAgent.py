@@ -71,13 +71,16 @@ def generate_sql(conversation):
 
 def handle_error(query, error):
     prompt = f"""
-    Given the following SQL, and the error from Snowflake. Resolve this. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response
+    Given the following SQL, and the error from Snowflake, along with user conversation. Resolve this. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response
 
     Error:
     {error}
 
     Code:
     {query}
+
+    Conversation:
+    {conversation}
 
     """
     response = openai.ChatCompletion.create(
