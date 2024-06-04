@@ -61,7 +61,7 @@ def generate_sql(conversation):
             {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. These queries should follow format from examples and Schema file. Query should not be out of schema provided, this is most crucial, especially make sure of schema when you are giving join statements with ON clause, and filters. Dont Assume.  Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier, apart from text 'Generated SQL Query:', and don't write anything after the query ends."},
             {"role": "user", "content": prompt}
         ],
-        max_tokens=2500,
+        max_tokens=1000,
         temperature=0.5,
         n=1,
         stop=None
@@ -85,7 +85,7 @@ def handle_error(query, error):
             {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response, apart from text 'Generated SQL Query:' and don't write anything after the query ends."},
             {"role": "user", "content": prompt}
         ],
-        max_tokens=3000,
+        max_tokens=1000,
         temperature=0.5,
         n=1,
         stop=None
