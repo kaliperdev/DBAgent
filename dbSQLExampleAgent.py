@@ -138,7 +138,7 @@ def generate_chart_code(dataframe):
     """
 
     full_prompt = [
-        {"role": "system", "content": "You are an expert in data visualization using Plotly. Brand colour is purple, use majorly white and purple shades. give proper legends, title, and data axis. Make a 3D chart that looks professional and super appealing. use valid hex color code as color id in code. Start python code with string '```python' and end with '```'"},
+        {"role": "system", "content": "You are an expert in data visualization using Plotly. Brand colour is purple, use majorly white and purple shades. give proper legends, title, and data axis. Make a 3D looking chart in 2D, that looks professional and super appealing. use valid hex color code as color id in code. Start python code with string '```python' and end with '```'"},
         {"role": "user", "content": prompt}
     ]
 
