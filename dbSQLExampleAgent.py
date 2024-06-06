@@ -5,6 +5,7 @@ import os
 import snowflake.connector
 import plotly.express as px
 import tiktoken
+import re
 
 
 # Ensure session state is initialized at the very beginning
@@ -211,15 +212,14 @@ if openai.api_key:
 
                 chart_code_response = generate_chart_code(result)
                 st.write("### Chart Code Response")
-                st.write(chart_code_response)
+                # st.write(chart_code_response)
                 chart_code = chart_code_response
-                #chart_code = extract_code_from_response(chart_code_response)
-                #st.write("### Extracted Chart Code")
-                #st.code(chart_code, language='python')
+                st.code(chart_code, language='python')
                 try:
-                    exec(chart_code)
+                    exec(chart_code, {'pd': pd, 'px': px, 'go': go, 'make_subplots': make_subplots})
                 except Exception as e:
                     st.error(f"Error executing chart code: {e}")
+
     # Display chat history
     st.write("### Chat History")
     for message in reversed(st.session_state.messages):
