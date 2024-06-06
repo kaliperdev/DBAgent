@@ -218,7 +218,14 @@ if openai.api_key:
                 chart_code = extract_code_from_response(chart_code_response)
                 st.code(chart_code, language='python')
                 try:
-                    exec(chart_code, {'pd': pd, 'px': px, 'go': go, 'make_subplots': make_subplots})
+                    # Define the local scope for exec to capture the figure
+                    local_scope = {}
+                    exec(chart_code, {'pd': pd, 'px': px, 'go': go, 'make_subplots': make_subplots, 'df': result}, local_scope)
+                    fig = local_scope.get('fig')
+                    if fig:
+                        st.plotly_chart(fig)
+                    else:
+                        st.error("No figure found in the generated code.")
                 except Exception as e:
                     st.error(f"Error executing chart code: {e}")
 
