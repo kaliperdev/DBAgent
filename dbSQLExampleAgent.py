@@ -135,7 +135,7 @@ def generate_chart_code(dataframe):
     """
 
     full_prompt = [
-        {"role": "system", "content": "You are an expert in data visualization using Plotly. Start python code with string '~~~python' and end with '```'},
+        {"role": "system", "content": "You are an expert in data visualization using Plotly. Start python code with string '```python' and end with '```'"},
         {"role": "user", "content": prompt}
     ]
 
