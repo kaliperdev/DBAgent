@@ -149,6 +149,13 @@ def generate_chart_code(dataframe):
     )
     return response.choices[0]['message']['content'].strip()
 
+def extract_code_from_response(response):
+    # Use regex to extract code block between ```python and ```
+    code_block = re.search(r'```python(.*?)```', response, re.DOTALL)
+    if code_block:
+        return code_block.group(1).strip()
+    return ""
+
 
 if openai.api_key:
     # Load schema CSV
@@ -201,7 +208,9 @@ if openai.api_key:
                 #st.write(result)
                 st.session_state.messages.append({"role": "assistant", "content": result})
                 # Generate and display the chart
-                chart_code = generate_chart_code(result)
+
+                chart_code_response = generate_chart_code(result)
+                chart_code = extract_code_from_response(chart_code_response)
                 st.write("### Generated Chart Code")
                 st.code(chart_code, language='python')
                 try:
