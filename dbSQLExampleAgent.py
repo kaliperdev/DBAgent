@@ -212,9 +212,10 @@ if openai.api_key:
                 chart_code_response = generate_chart_code(result)
                 st.write("### Chart Code Response")
                 st.write(chart_code_response)
+                chart_code = chart_code_response
                 #chart_code = extract_code_from_response(chart_code_response)
-                st.write("### Extracted Chart Code")
-                st.code(chart_code, language='python')
+                #st.write("### Extracted Chart Code")
+                #st.code(chart_code, language='python')
                 try:
                     exec(chart_code)
                 except Exception as e:
