@@ -200,8 +200,14 @@ if openai.api_key:
                 st.write("### Query Result")
                 #st.write(result)
                 st.session_state.messages.append({"role": "assistant", "content": result})
+                # Generate and display the chart
                 chart_code = generate_chart_code(result)
-                exec(chart_code)
+                st.write("### Generated Chart Code")
+                st.code(chart_code, language='python')
+                try:
+                    exec(chart_code)
+                except Exception as e:
+                    st.error(f"Error executing chart code: {e}")
 
     # Display chat history
     st.write("### Chat History")
