@@ -131,16 +131,23 @@ def extract_query_from_message(content):
 
 def generate_chart_code(dataframe):
     prompt = f"""
-    Generate a Plotly charting code for a pandas DataFrame. The DataFrame has the following columns: {', '.join(dataframe.columns)}. Create a line chart with the first column as the x-axis and the second column as the y-axis.
+    You are an expert in data visualization. Given a pandas DataFrame with the following columns: {', '.join(dataframe.columns)}, generate the best charting code using Plotly. The code should produce an informative and visually appealing chart.
     """
 
-    response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=prompt,
-        max_tokens=150,
-        temperature=0.5
+    full_prompt = [
+        {"role": "system", "content": "You are an expert in data visualization using Plotly."},
+        {"role": "user", "content": prompt}
+    ]
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4o",
+        messages=full_prompt,
+        max_tokens=4000,
+        temperature=0.5,
+        n=1,
+        stop=None
     )
-    return response.choices[0].text.strip()
+    return response.choices[0]['message']['content'].strip()
 
 
 if openai.api_key:
