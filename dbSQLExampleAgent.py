@@ -129,6 +129,19 @@ def extract_query_from_message(content):
         return query_part
     return content
 
+def generate_chart_code(dataframe):
+    prompt = f"""
+    Generate a Plotly charting code for a pandas DataFrame. The DataFrame has the following columns: {', '.join(dataframe.columns)}. Create a line chart with the first column as the x-axis and the second column as the y-axis.
+    """
+
+    response = openai.Completion.create(
+        model="text-davinci-003",
+        prompt=prompt,
+        max_tokens=150,
+        temperature=0.5
+    )
+    return response.choices[0].text.strip()
+
 
 if openai.api_key:
     # Load schema CSV
@@ -180,6 +193,8 @@ if openai.api_key:
                 st.write("### Query Result")
                 #st.write(result)
                 st.session_state.messages.append({"role": "assistant", "content": result})
+                chart_code = generate_chart_code(result)
+                exec(chart_code)
 
     # Display chat history
     st.write("### Chat History")
