@@ -210,14 +210,15 @@ if openai.api_key:
                 # Generate and display the chart
 
                 chart_code_response = generate_chart_code(result)
+                st.write("### Chart Code Response")
+                st.write(chart_code_response)
                 chart_code = extract_code_from_response(chart_code_response)
-                st.write("### Generated Chart Code")
+                st.write("### Extracted Chart Code")
                 st.code(chart_code, language='python')
                 try:
                     exec(chart_code)
                 except Exception as e:
                     st.error(f"Error executing chart code: {e}")
-
     # Display chat history
     st.write("### Chat History")
     for message in reversed(st.session_state.messages):
