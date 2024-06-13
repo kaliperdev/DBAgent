@@ -157,7 +157,7 @@ Data to be plotted:
             n=1,
             stop=None
         )
-        chart_code_response = response.choices[0].message['content'].strip()
+        chart_code_response = response.choices[0].message.content
         return chart_code_response
     except Exception as e:
         st.error(f"Error generating chart code: {e}")
