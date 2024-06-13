@@ -1,0 +1,668 @@
+Question,Query
+"Give me a query to get the daily trends of Optin, per funnel, and funnel Group Basis","SELECT 
+            DATE(CONVERT_TIMEZONE('UTC', properties_utm_current_born_on_date)) AS date_funnel,
+            b.reports_sheet AS funneloptin,
+            b._GROUP as FunnelGroup,
+            COUNT(DISTINCT CASE 
+                WHEN properties_email IS NOT NULL THEN properties_email 
+            END) AS Optins  
+        FROM 
+            RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS AS a
+        LEFT JOIN 
+            RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1 AS b
+        ON 
+            a.properties_clickfunnel_id = b.clickfunnel_id
+        WHERE 
+            reports_sheet IS NOT NULL
+            AND a.properties_clickfunnel_id IS NOT NULL 
+            AND b.clickfunnel_id IS NOT NULL
+        GROUP BY 
+            1, 2, 3"
+"Give me a query to get the daily trends of Deals, and Amount per funnel, and funnel Group Basis for Current Cycle(Optin and Deal Month Same)","SELECT 
+                        DATE(CONVERT_TIMEZONE('UTC', properties_utm_current_born_on_date)) AS date_funnel,
+                        c.reports_sheet AS funnel_deal,
+                        FunnelGroup,
+                        COUNT(DISTINCT a.properties_email) AS deals,
+                        SUM(properties_amount-properties_discount_amount) AS amount
+                    FROM 
+                        RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS AS a
+                    LEFT JOIN 
+                        (
+                            SELECT DISTINCT properties_clickfunnel_id, properties_email, properties_utm_current_born_on_date
+                            FROM RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS
+                        ) AS b
+                    ON 
+                        trim(lower(a.properties_email)) = trim(lower(b.properties_email))
+                    LEFT JOIN 
+                        (
+                            SELECT DISTINCT CLICKFUNNEL_ID, reports_sheet , _Group as FunnelGroup
+                            FROM RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1
+                        ) AS c
+                    ON 
+                        b.properties_clickfunnel_id = c.CLICKFUNNEL_ID
+                        and year(CONVERT_TIMEZONE('UTC', properties_utm_current_born_on_date)) = year(CONVERT_TIMEZONE('UTC', properties_closedate))
+                        and month(CONVERT_TIMEZONE('UTC', properties_utm_current_born_on_date)) = month(properties_closedate)
+                    WHERE 
+                        properties_payment_amount > 0 
+                        AND properties_pipeline = 'default'
+                    GROUP BY 
+                        1, 2, 3"
+"Give me a query to get the daily trends of Deals, and Amount per funnel, and funnel Group Basis for MTD(Month to Date)","SELECT 
+                        DATE(CONVERT_TIMEZONE('UTC', properties_utm_current_born_on_date)) AS date_funnel,
+                        c.reports_sheet AS funnel_deal,
+                        FunnelGroup,
+                        COUNT(DISTINCT a.properties_email) AS deals,
+                        SUM(properties_amount-properties_discount_amount) AS amount
+                    FROM 
+                        RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS AS a
+                    LEFT JOIN 
+                        (
+                            SELECT DISTINCT properties_clickfunnel_id, properties_email, properties_utm_current_born_on_date
+                            FROM RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS
+                        ) AS b
+                    ON 
+                        trim(lower(a.properties_email)) = trim(lower(b.properties_email))
+                    LEFT JOIN 
+                        (
+                            SELECT DISTINCT CLICKFUNNEL_ID, reports_sheet , _Group as FunnelGroup
+                            FROM RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1
+                        ) AS c
+                    ON 
+                        b.properties_clickfunnel_id = c.CLICKFUNNEL_ID
+                 
+                    WHERE 
+                        properties_payment_amount > 0 
+                        AND properties_pipeline = 'default'
+                    GROUP BY 
+                        1, 2, 3"
+"Give me a query to get the daily trends of Meeting Held per funnel, and funnel Group Basis for Current Cycle","SELECT 
+                DATE(CONVERT_TIMEZONE('UTC', properties_utm_current_born_on_date)) AS date_funnel,
+                c.reports_sheet AS funnel_deal,
+                c.ParentFunnel
+                COUNT(DISTINCT a.properties_email) AS meetingheld
+            FROM 
+                RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS AS a
+            LEFT JOIN 
+                (
+                    SELECT DISTINCT properties_clickfunnel_id, properties_email, properties_utm_current_born_on_date
+                    FROM RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS
+                ) AS b
+            ON 
+                trim(lower(a.properties_email)) = trim(lower(b.properties_email))
+            LEFT JOIN 
+                (
+                    SELECT DISTINCT CLICKFUNNEL_ID, reports_sheet , _Group as ParentFunnel
+                    FROM RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1
+                ) AS c
+            ON 
+                b.properties_clickfunnel_id = c.CLICKFUNNEL_ID
+            WHERE 
+                properties_pipeline = 'default' 
+                AND properties_dealstage in ('76235851','76235852','76235853','76235854', '76235855')
+            GROUP BY 
+                1, 2 "
+"What is the total Current Cycle Deals for May 2024, for the Funnel: ATA D2C Opt-In?","SELECT 
+    COUNT(DISTINCT a.properties_email) AS deals,
+    SUM(properties_amount-properties_discount_amount) AS amount
+FROM 
+    RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS AS a
+LEFT JOIN 
+    (
+        SELECT DISTINCT properties_clickfunnel_id, properties_email, properties_utm_current_born_on_date
+        FROM RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS
+    ) AS b
+ON 
+    trim(lower(a.properties_email)) = trim(lower(b.properties_email))
+LEFT JOIN 
+    (
+        SELECT DISTINCT CLICKFUNNEL_ID, reports_sheet
+        FROM RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1
+    ) AS c
+ON 
+    b.properties_clickfunnel_id = c.CLICKFUNNEL_ID
+WHERE 
+    properties_payment_amount > 0 
+    AND properties_pipeline = 'default'
+    AND c.reports_sheet = 'ATA D2C Opt-In'
+    AND EXTRACT(YEAR FROM CONVERT_TIMEZONE('UTC', properties_utm_current_born_on_date)) = 2024
+    AND EXTRACT(MONTH FROM CONVERT_TIMEZONE('UTC', properties_utm_current_born_on_date)) = 5
+    AND EXTRACT(YEAR FROM CONVERT_TIMEZONE('UTC', properties_closedate)) = 2024
+    AND EXTRACT(MONTH FROM CONVERT_TIMEZONE('UTC', properties_closedate)) = 5"
+What is the MoM Churn for the past 6 months for Subscription Users?,"with base_table as (
+select date(date_trunc('month',(DATEADD(MILLISECOND,PROPERTIES_HS_INITIATED_DATE_TIMESTAMP, '1970-01-01')))) as payment_month,
+lower(PROPERTIES_HS_CUSTOMER_EMAIL_VALUE) as email,
+sum(PROPERTIES_HS_TOTAL_COLLECTED_AMOUNT_AFTER_REFUNDS_VALUE) as total_amount
+from hubspot_nurp_payments.webhook_source_event
+where PROPERTIES_HS_LATEST_STATUS_VALUE='succeeded'
+and PROPERTIES_HS_PAYMENT_SOURCE_NAME_VALUE in 
+(select names from gsheet_subscription_source_name.subscription_names)
+group by 1,2
+order by 2,1
+)
+
+SELECT    
+churn_month,     
+COUNT(DISTINCT CASE WHEN total_amount IS NOT NULL AND total_amount_churn_month IS NULL 
+THEN email ELSE NULL END) AS churn_count,
+COUNT(DISTINCT CASE WHEN total_amount IS NOT NULL THEN email ELSE NULL END) AS m_1_paid 
+FROM (     
+SELECT         
+a.*, b.total_amount AS total_amount_churn_month, 
+DATEADD('month', 1, a.payment_month) AS churn_month     
+FROM base_table AS a     
+LEFT JOIN base_table AS b ON a.payment_month = DATEADD('month', -1, b.payment_month)         
+AND a.email = b.email )
+WHERE churn_month <= date(date_trunc('month',CURRENT_DATE - 1 ))
+and churn_month >= DATEADD(MONTH, -6,date_trunc('month',CURRENT_DATE - 1))
+GROUP BY 1 
+ORDER BY 1"
+What is the MoM active Subscription users since Jan-24 ?,"with base_table as (
+select date(date_trunc('month',(DATEADD(MILLISECOND,PROPERTIES_HS_INITIATED_DATE_TIMESTAMP, '1970-01-01')))) as payment_month,
+lower(PROPERTIES_HS_CUSTOMER_EMAIL_VALUE) as email,
+sum(PROPERTIES_HS_TOTAL_COLLECTED_AMOUNT_AFTER_REFUNDS_VALUE) as total_amount
+from hubspot_nurp_payments.webhook_source_event
+where PROPERTIES_HS_LATEST_STATUS_VALUE='succeeded'
+and PROPERTIES_HS_PAYMENT_SOURCE_NAME_VALUE in 
+(select names from gsheet_subscription_source_name.subscription_names)
+group by 1,2
+order by 2,1
+)
+
+select payment_month as month, count(distinct email)
+from base_table where total_amount >0
+where payment_month >= '2024-01-01'
+group by 1 order by 1"
+What is the Daily trend of Scheduled vs Held ?,"SELECT
+    DATE(DATE_TRUNC('day', CONVERT_TIMEZONE('UTC', a.timestamp))) AS date_funnel,
+    COUNT(DISTINCT a.DATA_FORM_SUBMISSION_EMAIL) AS scheduled,
+    COUNT(DISTINCT CASE WHEN c.properties_pipeline = 'default' AND c.properties_dealstage IN ('76235851','76235852','76235853','76235854','76235855') THEN a.DATA_FORM_SUBMISSION_EMAIL ELSE NULL END) AS held
+FROM
+    schedule_once.webhook_source_event AS a
+LEFT JOIN
+    RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_contacts AS b ON TRIM(LOWER(b.PROPERTIES_EMAIL)) = TRIM(LOWER(a.DATA_FORM_SUBMISSION_EMAIL))
+LEFT JOIN
+    RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_deals AS c ON TRIM(LOWER(c.PROPERTIES_EMAIL)) = TRIM(LOWER(a.DATA_FORM_SUBMISSION_EMAIL))
+GROUP BY
+    1
+ORDER BY
+    1 DESC"
+What is the MoM Show Rate ?,"SELECT
+    DATE(DATE_TRUNC('month', CONVERT_TIMEZONE('UTC', a.timestamp))) AS month,
+    COUNT(DISTINCT a.DATA_FORM_SUBMISSION_EMAIL) AS scheduled,
+    COUNT(DISTINCT CASE WHEN c.properties_pipeline = 'default' AND c.properties_dealstage IN ('76235851','76235852','76235853','76235854','76235855') THEN a.DATA_FORM_SUBMISSION_EMAIL ELSE NULL END) AS held,
+round((COUNT(DISTINCT CASE WHEN c.properties_pipeline = 'default' AND c.properties_dealstage IN ('76235851','76235852','76235853','76235854','76235855') THEN a.DATA_FORM_SUBMISSION_EMAIL ELSE NULL END)/COUNT(DISTINCT a.DATA_FORM_SUBMISSION_EMAIL)),2) as show_ratio
+    
+FROM
+    schedule_once.webhook_source_event AS a
+LEFT JOIN
+    RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_contacts AS b ON TRIM(LOWER(b.PROPERTIES_EMAIL)) = TRIM(LOWER(a.DATA_FORM_SUBMISSION_EMAIL))
+LEFT JOIN
+    RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_deals AS c ON TRIM(LOWER(c.PROPERTIES_EMAIL)) = TRIM(LOWER(a.DATA_FORM_SUBMISSION_EMAIL))
+GROUP BY
+    1
+ORDER BY
+    1 DESC"
+"What is the total users, and CLV.","SELECT     COUNT(DISTINCT properties_email) AS total_users,     COUNT(DISTINCT CASE WHEN total_payment_count = 1 THEN properties_email ELSE NULL END) AS total_onetimeusers,     COUNT(DISTINCT CASE WHEN total_payment_count > 1 THEN properties_email ELSE NULL END) AS total_multipletimeusers,     AVG(total_payment_amount) AS avg_clv_overall,     AVG(CASE WHEN total_payment_count = 1 THEN total_payment_amount ELSE NULL END) AS avg_clv_onetimeusers,     AVG(CASE WHEN total_payment_count > 1 THEN total_payment_amount ELSE NULL END) AS avg_clv_multipletimeusers,     AVG(CASE WHEN total_payment_count > 1 THEN DATEDIFF(DAY, first_purchase_date, last_purchase_date) ELSE NULL END) AS avg_life_span FROM     (         SELECT             properties_email,             SUM(properties_amount) AS total_amount,             SUM(properties_revenue_discount) AS total_payment_amount,             SUM(properties_discount_amount) AS total_discount_amount,             MIN(CONVERT_TIMEZONE('America/New_York', properties_closedate)) AS first_purchase_date,             MAX(CONVERT_TIMEZONE('America/New_York', properties_closedate)) AS last_purchase_date,             COUNT(*) AS total_payment_count         FROM             RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS         WHERE             properties_pipeline IN ('35026189', 'default')             AND properties_revenue_discount > 0             AND LOWER(IFNULL(PROPERTIES_STRIPE_PLAN_ID, 'NA')) NOT LIKE '%connection-fee%'             AND properties_email IS NOT NULL         GROUP BY             1     ) AS subquery"
+"what is the monthly trend for Amount, Spend of Google and FB ADs, and ROAS, for current cycle as well as MTD","select month(ifnull(a.date_funnel,b.date_funnel)) as month_,
+ year(ifnull(a.date_funnel,b.date_funnel)) as year_,
+sum(ifnull(a.AMOUNT_MTD,0)) as AMOUNT_MTD,
+sum(ifnull(a.AMOUNT_CURRENT,0)) as AMOUNT_CURRENT,
+sum(ifnull(a.spend,0)) as googlespend,
+sum(ifnull(b.spend,0)) as fbspend,
+case when sum(ifnull(a.spend,0))+sum(ifnull(b.spend,0)) >0 then
+sum(ifnull(a.AMOUNT_CURRENT,0))/(sum(ifnull(a.spend,0))+sum(ifnull(b.spend,0)))
+else 0 end as ROAS_currentcycle,
+case when sum(ifnull(a.spend,0))+sum(ifnull(b.spend,0)) >0 then
+sum(ifnull(a.AMOUNT_MTD,0))/(sum(ifnull(a.spend,0))+sum(ifnull(b.spend,0)))
+else 0 end as ROAS_MTD
+from
+(
+    select ifnull(a.date_funnel,b.date_funnel) as date_funnel,
+    ifnull(a.AMOUNT_MTD,0) as AMOUNT_MTD,
+    ifnull(a.AMOUNT_CURRENT,0) as AMOUNT_CURRENT,
+    ifnull(b.spend,0) as spend
+    from
+        (      
+              SELECT 
+                            DATE(CONVERT_TIMEZONE('UTC', properties_closedate)) AS date_funnel,
+                            SUM( properties_amount-properties_discount_amount) AS AMOUNT_MTD,
+                            sum(case when year(properties_utm_current_born_on_date) = year(properties_closedate) and month(properties_utm_current_born_on_date) = month(properties_closedate) then properties_amount-properties_discount_amount else 0 end) as AMOUNT_CURRENT
+                        FROM 
+                            RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS AS a
+                        LEFT JOIN 
+                            (
+                                SELECT DISTINCT properties_clickfunnel_id, properties_email, properties_utm_current_born_on_date
+                                FROM RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS
+                            ) AS b
+                        ON 
+                            trim(lower(a.properties_email)) = trim(lower(b.properties_email))
+                        LEFT JOIN 
+                            (
+                                SELECT DISTINCT CLICKFUNNEL_ID, reports_sheet , _group as ParentFunnel
+                                FROM RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1
+                            ) AS c
+                        ON 
+                            b.properties_clickfunnel_id = c.CLICKFUNNEL_ID
+                            
+                        WHERE 
+                            properties_payment_amount > 0 
+                            AND properties_pipeline = 'default'
+                        GROUP BY 
+                            1
+    ) as a 
+    full outer join
+    (
+        
+            SELECT DATE(CONVERT_TIMEZONE('UTC', segments_date)) as date_funnel,
+            SUM(METRICS_COST_MICROS)/1000000 AS SPEND
+            from
+            RUDDER_EVENTS.GOOGLE_ADS.GOOGLE_ADSRUDDER_ACCOUNT_PERFORMANCE_REPORT
+            where segments_date is not null
+            GROUP BY 1
+        
+    ) as b
+    on a.date_funnel = b.date_funnel
+) as a 
+full outer join
+(
+   select DATE(CONVERT_TIMEZONE('UTC', DATE_START)) as date_funnel, 
+            sum(spend) as Spend
+        from  (select DATE_START,spend,campaign_name from RUDDER_EVENTS.NURP_VIA.META_ADS_DATA_RUDDER_ADS_INSIGHTS
+                union 
+                select DATE_START, spend,campaign_name from RUDDER_EVENTS.NURP_ADS_ACCOUNT.FB_ADS_NURPRUDDER_ADS_INSIGHTS
+                ) as a
+                group by 1
+) as b
+on a.date_funnel = b.date_funnel
+group by 1,2"
+What is the current month marketing and all/true utilisation Rate. Utilisation Rate definition: Appointment vs Slots available. every weekday has specific number of fixed slots.,"SELECT 
+    DATE(DATA_STARTING_TIME) AS Date, 
+    DOW, 
+    CASE 
+        WHEN DOW IN (1, 2, 3, 4, 5) THEN 56
+        WHEN DOW = 6 THEN 21
+        ELSE NULL 
+    END AS Slots, 
+    COUNT(DISTINCT case when
+    DATA_RESCHEDULE_URL NOT LIKE '%salesbookinglink%' then
+    DATA_FORM_SUBMISSION_EMAIL else null end) AS marketing_appointments,
+    COUNT(DISTINCT DATA_FORM_SUBMISSION_EMAIL) AS all_appointments
+FROM 
+    (
+        SELECT 
+            DATA_FORM_SUBMISSION_EMAIL, 
+            DATA_TRACKING_ID, 
+            type, 
+            anonymous_id, 
+            data_virtual_conferencing_join_url, 
+            DATA_RESCHEDULE_URL, 
+            DATA_STARTING_TIME, 
+            DAYOFWEEK(DATA_STARTING_TIME) AS DOW, 
+            RECEIVED_AT, 
+            RANK() OVER (PARTITION BY DATA_FORM_SUBMISSION_EMAIL, DATA_TRACKING_ID ORDER BY RECEIVED_AT DESC) AS rank 
+        FROM 
+            RUDDER_EVENTS.SCHEDULE_ONCE.WEBHOOK_SOURCE_EVENT 
+        WHERE 
+            type <> 'booking.completed'
+    ) AS subquery
+WHERE 
+    rank = 1  
+    AND DATE(CURRENT_DATE) >= DATE(DATA_STARTING_TIME) 
+    AND DOW IN (1, 2, 3, 4, 5, 6) 
+    AND type IN ('booking.scheduled', 'booking.rescheduled') 
+GROUP BY 
+    1, 2, 3"
+"Give me the daily trend of FB Spend, Optins, Application, Qualified, Scheduled,  Deals, Amount/Revenue, Collected, Meeting Held on following levels/breakdown:
+1. AD Name
+2. Media Used
+3. Medium
+4. Ad Account
+5. Adset ID","SELECT
+    B.date_funnel,
+    A.AD_Name,
+    A.MEDIA_id,
+    A.funnel_fbspend AS FUNNEL,
+    A.adAccount,
+    A.ADSET_ID,
+    B.Medium,
+    IFNULL(A.SPEND, 0) AS SPEND,
+    IFNULL(B.OPTINS, 0) AS OPTINS,
+    IFNULL(B.APPLICATION, 0) AS APPLICATION,
+    IFNULL(B.QUALIFIED, 0) AS QUALIFIED,
+    IFNULL(B.SCHEDULED, 0) AS SCHEDULED,
+    IFNULL(B.DEALS, 0) AS DEALS,
+    IFNULL(B.AMOUNT, 0) AS AMOUNT,
+    IFNULL(B.COLLECTED, 0) AS COLLECTED,
+    IFNULL(B.MEETINGHELD, 0) AS MEETINGHELD
+FROM
+    (
+        SELECT
+            date_funnel,
+            a.AD_NAME,
+            SPLIT_PART(a.AD_NAME, '|', 3) AS MEDIA_id,
+            a.adAccount,
+            b.funnel_strategy AS funnel_fbspend,
+            b.ADSET_ID,
+            SUM(Spend) AS Spend
+        FROM
+            (
+                SELECT
+                    DATE(DATE_START) AS date_funnel,
+                    SPLIT_PART(campaign_name, '|', 2) AS campaign_id,
+                    LOWER(TRIM(AD_NAME)) AS AD_NAME,
+                    adAccount,
+                    spend AS Spend
+                FROM
+                    (
+                        SELECT
+                            DATE_START,
+                            AD_NAME,
+                            spend,
+                            campaign_name,
+                            'NurpVia' AS adAccount
+                        FROM
+                            RUDDER_EVENTS.NURP_VIA.META_ADS_DATA_RUDDER_ADS_INSIGHTS
+                        UNION
+                        SELECT
+                            DATE_START,
+                            AD_NAME,
+                            spend,
+                            campaign_name,
+                            'NurpMain' AS adAccount
+                        FROM
+                            RUDDER_EVENTS.NURP_ADS_ACCOUNT.FB_ADS_NURPRUDDER_ADS_INSIGHTS
+                    ) AS a
+            ) AS a
+            LEFT JOIN
+            (
+                SELECT
+                    DISTINCT a.AD_NAME_AD_ID_CAMPAIGN_ID_MEDIA_ID AS AD_NAME,
+                    a.CAMPIGN_ID,
+                    a.ADSET_ID,
+                    b.funnel_strategy
+                FROM
+                    RUDDER_EVENTS.ADS_PERFORMANCE_LIBRARY.AP_LRUDDER_ADS AS a
+                    LEFT JOIN
+                    RUDDER_EVENTS.ADS_PERFORMANCE_LIBRARY.AP_LRUDDER_CAMPAIGN AS b
+                    ON a.campign_id = b.campaign_id
+            ) AS b
+            ON a.AD_NAME = b.AD_NAME
+        GROUP BY 1, 2, 3, 4, 5, 6
+    ) AS A
+    FULL OUTER JOIN
+    (
+        SELECT DISTINCT
+            A.DATE_FUNNEL,
+            A.AD_NAME,
+            A.MEDIA_ID,
+            A.MEDIUM,
+            SUM(OPTINS) AS OPTINS,
+            SUM(APPLICATION) AS APPLICATION,
+            SUM(QUALIFIED) AS QUALIFIED,
+            SUM(SCHEDULED) AS SCHEDULED,
+            SUM(DEALS) AS DEALS,
+            SUM(AMOUNT) AS AMOUNT,
+            SUM(COLLECTED) AS COLLECTED,
+            SUM(
+                CASE
+                    WHEN b.meetingheld IS NULL THEN 0
+                    ELSE b.meetingheld
+                END
+            ) AS meetingheld
+        FROM
+            (
+                SELECT
+                    a.*,
+                    CASE
+                        WHEN b.deals IS NULL THEN 0
+                        ELSE b.deals
+                    END AS deals,
+                    CASE
+                        WHEN b.amount IS NULL THEN 0
+                        ELSE b.amount
+                    END AS amount,
+                    CASE
+                        WHEN b.collected IS NULL THEN 0
+                        ELSE b.collected
+                    END AS collected
+                FROM
+                    (
+                        SELECT
+                            DISTINCT a.*,
+                            CASE
+                                WHEN c.Scheduled IS NULL THEN 0
+                                ELSE c.Scheduled
+                            END AS Scheduled
+                        FROM
+                            (
+                                SELECT
+                                    DISTINCT
+                                    a.date_funnel,
+                                    a.funneloptin,
+                                    a.AD_Name,
+                                    LEFT(TRIM(SPLIT_PART(a.AD_NAME, '|', 3)), 5) AS media_id,
+                                    a.Medium,
+                                    a.Optins,
+                                    CASE
+                                        WHEN b.Application IS NULL THEN 0
+                                        ELSE b.Application
+                                    END AS Application,
+                                    CASE
+                                        WHEN b.Qualified IS NULL THEN 0
+                                        ELSE b.Qualified
+                                    END AS Qualified
+                                FROM
+                                    (
+                                        SELECT
+                                            DATE(CONVERT_TIMEZONE('UTC', a.timestamp)) AS date_funnel,
+                                            b.reports_sheet AS funneloptin,
+                                            c.properties_utm_content_current AS AD_Name,
+                                            CASE
+                                                WHEN LOWER(PROPERTIES_UTM_MEDIUM_CURRENT) LIKE '%paid%' AND LOWER(PROPERTIES_UTM_MEDIUM_CURRENT) LIKE '%paid%' THEN 'Paid Social'
+                                                ELSE 'Other'
+                                            END AS Medium,
+                                            COUNT(DISTINCT user_id) AS optins
+                                        FROM
+                                            RUDDER_EVENTS.CLICKFUNNEL_ATA_D_2_C_OPTIN_MAIN.CREATED AS a
+                                            LEFT JOIN
+                                            RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1 AS b
+                                            ON (CASE
+                                                WHEN a.clickfunnel_id IS NOT NULL THEN a.clickfunnel_id
+                                                ELSE a.click_funnel_id
+                                            END) = b.clickfunnel_id
+                                            LEFT JOIN
+                                            RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS AS c
+                                            ON (CASE
+                                                WHEN a.clickfunnel_id IS NOT NULL THEN a.clickfunnel_id
+                                                ELSE a.click_funnel_id
+                                            END) = c.properties_clickfunnel_id
+                                            AND a.user_id = c.properties_email
+                                        GROUP BY 1, 2, 3, 4
+                                    ) AS a
+                                    LEFT JOIN
+                                    (
+                                        SELECT
+                                            DATE(CONVERT_TIMEZONE('UTC', properties_utm_current_born_on_date)) AS date_funnel,
+                                            b.reports_sheet AS funnelapp,
+                                            PROPERTIES_UTM_CONTENT_CURRENT AS AD_Name,
+                                            COUNT(DISTINCT
+                                                CASE
+                                                    WHEN PROPERTIES_JOTFORM_RESULTS IS NOT NULL THEN properties_email
+                                                END
+                                            ) AS Application,
+                                            COUNT(DISTINCT
+                                                CASE
+                                                    WHEN PROPERTIES_JOTFORM_RESULTS IN ('Qualified', 'ATA Lite Strat', 'Qualified+') THEN properties_email
+                                                END
+                                            ) AS Qualified
+                                        FROM
+                                            RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS AS a
+                                            LEFT JOIN
+                                            RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1 AS b
+                                            ON a.properties_clickfunnel_id = b.clickfunnel_id
+                                        GROUP BY 1, 2, 3
+                                    ) AS b
+                                    ON a.date_funnel = b.date_funnel
+                                    AND a.funneloptin = b.funnelapp
+                                    AND a.Ad_Name = b.Ad_Name
+                            ) AS a
+                            LEFT JOIN
+                            (
+                                SELECT
+                                    DISTINCT
+                                    DATE(CONVERT_TIMEZONE('UTC', properties_utm_current_born_on_date)) AS date_funnel,
+                                    c.REPORTS_SHEET AS funnelsch,
+                                    b.AD_Name,
+                                    COUNT(DISTINCT a.properties_email) AS Scheduled
+                                FROM
+                                    RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS AS a
+                                    LEFT JOIN
+                                    (
+                                        SELECT DISTINCT
+                                            properties_clickfunnel_id,
+                                            properties_email,
+                                            properties_utm_current_born_on_date,
+                                            properties_utm_content_current AS AD_Name
+                                        FROM
+                                            RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS
+                                    ) AS b
+                                    ON TRIM(LOWER(a.properties_email)) = TRIM(LOWER(b.properties_email))
+                                    LEFT JOIN
+                                    (
+                                        SELECT DISTINCT
+                                            CLICKFUNNEL_ID,
+                                            REPORTS_SHEET
+                                        FROM
+                                            RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1
+                                    ) AS c
+                                    ON b.properties_clickfunnel_id = c.CLICKFUNNEL_ID
+                                WHERE
+                                    DATE(CONVERT_TIMEZONE('UTC', PROPERTIES_HS_DATE_ENTERED_CONTRACTSENT)) IS NOT NULL
+                                GROUP BY 1, 2, 3
+                            ) AS c
+                            ON a.date_funnel = c.date_funnel
+                            AND a.funneloptin = c.funnelsch
+                            AND a.Ad_Name = C.Ad_Name
+                    ) AS a
+                    LEFT JOIN
+                    (
+                        SELECT
+                            c.reports_sheet AS funnel_deal,
+                            a.*
+                        FROM
+                            (
+                                SELECT
+                                    DATE(CONVERT_TIMEZONE('UTC', properties_utm_current_born_on_date)) AS date_funnel,
+                                    b.AD_Name,
+                                    b.properties_clickfunnel_id,
+                                    COUNT(DISTINCT a.properties_email) AS deals,
+                                    SUM(properties_revenue_discount) AS amount,
+                                    SUM(properties_revenue_discount) AS collected
+                                FROM
+                                    RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS AS a
+                                    LEFT JOIN
+                                    (
+                                        SELECT DISTINCT
+                                            properties_clickfunnel_id,
+                                            properties_email,
+                                            properties_utm_current_born_on_date,
+                                            PROPERTIES_UTM_CONTENT_CURRENT AS AD_Name
+                                        FROM
+                                            RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS
+                                    ) AS b
+                                    ON TRIM(LOWER(a.properties_email)) = TRIM(LOWER(b.properties_email))
+                                    AND YEAR(CONVERT_TIMEZONE('UTC', properties_utm_current_born_on_date)) = YEAR(CONVERT_TIMEZONE('UTC', properties_closedate))
+                                    AND QUARTER(CONVERT_TIMEZONE('UTC', properties_utm_current_born_on_date)) = QUARTER(properties_closedate)
+                                WHERE
+                                    properties_revenue_discount > 0
+                                    AND properties_pipeline = 'default'
+                                GROUP BY 1, 2, 3
+                            ) AS a
+                            LEFT JOIN
+                            (
+                                SELECT DISTINCT
+                                    CLICKFUNNEL_ID,
+                                    reports_sheet
+                                FROM
+                                    RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1
+                            ) AS c
+                            ON TRIM(a.properties_clickfunnel_id) = TRIM(c.CLICKFUNNEL_ID)
+                    ) AS b
+                    ON a.date_funnel = b.date_funnel
+                    AND a.funneloptin = b.funnel_deal
+                    AND a.AD_Name = b.AD_Name
+            ) AS a
+            LEFT JOIN
+            (
+                SELECT
+                    DATE(CONVERT_TIMEZONE('UTC', properties_utm_current_born_on_date)) AS date_funnel,
+                    c.reports_sheet AS funnel_deal,
+                    AD_Name,
+                    COUNT(DISTINCT a.properties_email) AS meetingheld
+                FROM
+                    RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS AS a
+                    LEFT JOIN
+                    (
+                        SELECT DISTINCT
+                            properties_clickfunnel_id,
+                            properties_email,
+                            properties_utm_current_born_on_date,
+                            properties_utm_content_current AS AD_Name
+                        FROM
+                            RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS
+                    ) AS b
+                    ON TRIM(LOWER(a.properties_email)) = TRIM(LOWER(b.properties_email))
+                    LEFT JOIN
+                    (
+                        SELECT DISTINCT
+                            CLICKFUNNEL_ID,
+                            reports_sheet
+                        FROM
+                            RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1
+                    ) AS c
+                    ON b.properties_clickfunnel_id = c.CLICKFUNNEL_ID
+                WHERE
+                    properties_pipeline = 'default'
+                    AND properties_dealstage IN ('76235851', '76235855', '76235852', '76235853', '76235854', '76235855')
+                GROUP BY 1, 2, 3
+            ) AS b
+            ON a.date_funnel = b.date_funnel
+            AND a.funneloptin = b.funnel_deal
+            AND a.AD_Name = b.AD_Name
+        GROUP BY 1, 2, 3, 4
+    ) AS B
+    ON A.date_funnel = B.date_funnel
+    AND LOWER(TRIM(A.AD_NAME)) = LOWER(TRIM(B.AD_NAME))
+WHERE
+    B.date_funnel IS NOT NULL;
+"
+What is MoM churn happening with respect to active users in the previous month. Churned customers are those who missed their monthly payment cycle,"with base_table as (
+select date(date_trunc('month',(DATEADD(MILLISECOND,PROPERTIES_HS_INITIATED_DATE_TIMESTAMP, '1970-01-01')))) as payment_month,
+lower(PROPERTIES_HS_CUSTOMER_EMAIL_VALUE) as email,
+sum(PROPERTIES_HS_TOTAL_COLLECTED_AMOUNT_AFTER_REFUNDS_VALUE) as total_amount
+from hubspot_nurp_payments.webhook_source_event
+where PROPERTIES_HS_LATEST_STATUS_VALUE='succeeded'
+and PROPERTIES_HS_PAYMENT_SOURCE_NAME_VALUE in 
+(select names from gsheet_subscription_source_name.subscription_names)
+group by 1,2
+order by 2,1
+)
+
+SELECT    
+churn_month,     
+COUNT(DISTINCT CASE WHEN total_amount IS NOT NULL AND total_amount_churn_month IS NULL 
+THEN email ELSE NULL END) AS churn_count,
+COUNT(DISTINCT CASE WHEN total_amount IS NOT NULL THEN email ELSE NULL END) AS m_1_paid 
+FROM (     
+SELECT         
+a.*, b.total_amount AS total_amount_churn_month, 
+DATEADD('month', 1, a.payment_month) AS churn_month     
+FROM base_table AS a     
+LEFT JOIN base_table AS b ON a.payment_month = DATEADD('month', -1, b.payment_month)         
+AND a.email = b.email )
+WHERE churn_month <= date(date_trunc('month',CURRENT_DATE - 1 ))
+and churn_month >= DATEADD(MONTH, -6,date_trunc('month',CURRENT_DATE - 1))
+GROUP BY 1 
+ORDER BY 1
+
+"
