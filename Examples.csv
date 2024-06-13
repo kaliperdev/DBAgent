@@ -98,7 +98,7 @@ Question,Query
                         RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1) as c
                         on b.properties_clickfunnel_id = c.CLICKFUNNEL_ID
                         where 
-                        DATE(CONVERT_TIMEZONE('UTC', PROPERTIES_HS_DATE_ENTERED_CONTRACTSENT)) is not null
+                        DATE(CONVERT_TIMEZONE('UTC', a.PROPERTIES_HS_DATE_ENTERED_CONTRACTSENT)) is not null
                         group by 1,2,3"
 "Give me a query to get the daily trends of Meeting Held per funnel, and funnel Group Basis for Current Cycle","SELECT 
                 DATE(CONVERT_TIMEZONE('UTC', properties_utm_current_born_on_date)) AS date_funnel,
