@@ -82,7 +82,7 @@ def generate_sql(conversation):
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 sql_query += chunk.choices[0].delta.content
-                #st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
+                st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
         return sql_query.strip()
     except Exception as e:
         st.error(f"Error generating SQL: {e}")
@@ -125,34 +125,42 @@ def handle_error(query, error):
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 corrected_sql_query += chunk.choices[0].delta.content
-                #st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
+                st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
         return corrected_sql_query.strip()
     except Exception as e:
         st.error(f"Error correcting SQL: {e}")
         return ""
 
 def generate_chart_code(dataframe):
+    if isinstance(dataframe, str):
+        st.error("Invalid dataframe provided to generate_chart_code.")
+        return ""
+
     prompt = f"""
     You are an expert in data visualization. Given a pandas DataFrame with the following columns: {', '.join(dataframe.columns)}, generate the best charting code using Plotly. The code should produce an informative and visually appealing chart.
-    
+
     Data to be plotted:
-    {dataframe}
+    {dataframe.head().to_string(index=False)}
     """
 
     full_prompt = [
-        {"role": "system", "content": "You are an expert in data visualization using Plotly. Brand colour is purple, use majorly white and purple shades. give proper visible dark legends, title, and data axis for white background. Make a 3D looking chart in 2D, that looks professional and super appealing. use valid hex color code as color id in code. Start python code with string '```python' and end with '```'"},
+        {"role": "system", "content": "You are an expert in data visualization using Plotly. Use the given DataFrame to generate professional and appealing chart code. The DataFrame will be provided as 'df'."},
         {"role": "user", "content": prompt}
     ]
 
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=full_prompt,
-        max_tokens=4000,
-        temperature=0.5,
-        n=1,
-        stop=None
-    )
-    return response.choices[0]['message']['content'].strip()
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=full_prompt,
+            max_tokens=4000,
+            temperature=0.5,
+            n=1,
+            stop=None
+        )
+        return response.choices[0]['message']['content'].strip()
+    except Exception as e:
+        st.error(f"Error generating chart code: {e}")
+        return ""
 
 def extract_code_from_response(response):
     code_block = re.search(r'```python(.*?)```', response, re.DOTALL)
@@ -186,16 +194,16 @@ if api_key:
             st.session_state.messages.append({"role": "user", "content": user_question})
             st.session_state.messages.append({"role": "assistant", "content": sql_query})
             actual_sql_query = extract_query_from_message(sql_query)
-            
+
             result = execute_query(actual_sql_query)
-            
-            if "SQL compilation error" in result:
+
+            if isinstance(result, str) and "SQL compilation error" in result:
                 st.error(f"SQL compilation error: {result}")
                 corrected_sql_query = handle_error(actual_sql_query, result)
                 st.session_state.messages.append({"role": "assistant", "content": corrected_sql_query})
                 corrected_sql_query_text = extract_query_from_message(corrected_sql_query)
                 result = execute_query(corrected_sql_query_text)
-                if "SQL compilation error" in result:
+                if isinstance(result, str) and "SQL compilation error" in result:
                     st.error(f"Error executing corrected query: {result}")
                 else:
                     st.write("### Corrected Query Result")
@@ -205,20 +213,23 @@ if api_key:
                 st.write("### Query Result")
                 st.session_state.messages.append({"role": "assistant", "content": result})
 
-                chart_code_response = generate_chart_code(result)
-                st.write("### Chart Code Response")
-                chart_code = extract_code_from_response(chart_code_response)
-                try:
-                    # Define the local scope for exec to capture the figure
-                    local_scope = {}
-                    exec(chart_code, {'pd': pd, 'px': px, 'go': go, 'make_subplots': make_subplots, 'df': result}, local_scope)
-                    fig = local_scope.get('fig')
-                    if fig:
-                        st.plotly_chart(fig)
-                    else:
-                        st.error("No figure found in the generated code.")
-                except Exception as e:
-                    st.error(f"Error executing chart code: {e}")
+                if not isinstance(result, pd.DataFrame):
+                    st.error("Result is not a valid DataFrame.")
+                else:
+                    chart_code_response = generate_chart_code(result)
+                    st.write("### Chart Code Response")
+                    chart_code = extract_code_from_response(chart_code_response)
+                    try:
+                        # Define the local scope for exec to capture the figure
+                        local_scope = {}
+                        exec(chart_code, {'pd': pd, 'px': px, 'go': go, 'make_subplots': make_subplots, 'df': result}, local_scope)
+                        fig = local_scope.get('fig')
+                        if fig:
+                            st.plotly_chart(fig)
+                        else:
+                            st.error("No figure found in the generated code.")
+                    except Exception as e:
+                        st.error(f"Error executing chart code: {e}")
 
     st.write("### Chat History")
     for message in reversed(st.session_state.messages):
@@ -226,11 +237,13 @@ if api_key:
             st.write(f"**User:** {message['content']}")
         else:
             try:
-                fig = px.line(result)
-                st.plotly_chart(fig)
+                if isinstance(result, pd.DataFrame):
+                    fig = px.line(result)
+                    st.plotly_chart(fig)
             except:
-                print("Something is Suspicious")
+                print("Something is suspicious")
             st.code(message['content'], language='sql')
-            st.write(result)
+            if isinstance(result, pd.DataFrame):
+                st.write(result)
 else:
     st.warning("Please enter your OpenAI API key to proceed.")
