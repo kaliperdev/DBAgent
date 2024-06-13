@@ -136,7 +136,7 @@ def generate_chart_code(dataframe):
     Generate Plotly chart code for the given pandas DataFrame with columns: {', '.join(dataframe.columns)}. The chart should be informative and visually appealing.
 
     Data to be plotted:
-    {dataframe.to_string(index=False)}
+    {dataframe.head().to_string(index=False)}
 
     Chart Code:
     """
@@ -218,6 +218,7 @@ if api_key:
                 st.write("### Chart Code Response")
                 chart_code = extract_code_from_response(chart_code_response)
                 try:
+                    # Define the local scope for exec to capture the figure
                     local_scope = {}
                     exec(chart_code, {'pd': pd, 'px': px, 'go': go, 'make_subplots': make_subplots, 'df': result}, local_scope)
                     fig = local_scope.get('fig')
