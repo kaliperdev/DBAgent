@@ -23,8 +23,9 @@ SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
 SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
 SNOWFLAKE_ROLE = "Rudder"
 
-openai.api_key = st.secrets.credentials.api_key
-client = OpenAI()
+# Access the API key from Streamlit secrets and initialize the client
+api_key = st.secrets.credentials.api_key
+client = OpenAI(api_key=api_key)
 
 def execute_query(query):
     try:
@@ -73,7 +74,7 @@ def generate_sql(conversation):
         messages=full_prompt,
         stream=True,
     )
-    
+
     sql_query = ""
     for chunk in stream:
         if chunk.choices[0].delta.content is not None:
@@ -153,7 +154,7 @@ def extract_code_from_response(response):
         return code_block.group(1).strip()
     return ""
 
-if openai.api_key:
+if api_key:
     schema_file_path = 'Schema.csv'
     schema_df = pd.read_csv(schema_file_path)
 
@@ -225,4 +226,4 @@ if openai.api_key:
             st.code(message['content'], language='sql')
             st.write(result)
 else:
-    st.warning(f"Please enter your OpenAI API key to proceed. {st.secrets.credentials.sf_password}")
+    st.warning("Please enter your OpenAI API key to proceed.")
