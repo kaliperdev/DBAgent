@@ -175,10 +175,10 @@ if api_key:
 
     if st.button("Send"):
         if user_question:
-            conversation = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state.messages])
-            sql_query = generate_sql(conversation + f"\nUser: {user_question}")
             st.session_state.messages.append({"role": "user", "content": user_question})
             st.session_state.messages.append({"role": "assistant", "content": sql_query})
+            conversation = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state.messages])
+            sql_query = generate_sql(conversation + f"\nUser: {user_question}")
             actual_sql_query = extract_query_from_message(sql_query)
             
             result = execute_query(actual_sql_query)
