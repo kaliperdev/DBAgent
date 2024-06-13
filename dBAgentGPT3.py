@@ -48,7 +48,7 @@ def execute_query(query):
 
 def generate_sql(conversation):
     prompt = f"""
-    Generate an SQL query based on the given conversation, schema, and examples. Follow the schema strictly and use the logic and filters from the examples provided as a information base to the data, and refer it. 
+    Generate an SQL query based on the given conversation, schema, and examples. Follow the schema strictly and use the logic and filters from the examples provided as a information base to the data, and refer it. Also use it to figure out which column to use on what queries, and those columns are present in table schema. Use identifiers in query very carefully.
 
     Schema:
     {schema_info}
