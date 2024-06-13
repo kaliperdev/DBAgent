@@ -82,7 +82,7 @@ def generate_sql(conversation):
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 sql_query += chunk.choices[0].delta.content
-                st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
+                #st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
         return sql_query.strip()
     except Exception as e:
         st.error(f"Error generating SQL: {e}")
@@ -125,7 +125,7 @@ def handle_error(query, error):
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 corrected_sql_query += chunk.choices[0].delta.content
-                st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
+                #st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
         return corrected_sql_query.strip()
     except Exception as e:
         st.error(f"Error correcting SQL: {e}")
@@ -157,7 +157,7 @@ def generate_chart_code(dataframe):
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 chart_code_response += chunk.choices[0].delta.content
-                st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
+                #st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
         return chart_code_response.strip()
     except Exception as e:
         st.error(f"Error generating chart code: {e}")
