@@ -149,7 +149,7 @@ Data to be plotted:
     ]
 
     try:
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model="gpt-4",
             messages=full_prompt,
             max_tokens=4000,
