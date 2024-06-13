@@ -133,35 +133,26 @@ def handle_error(query, error):
 
 def generate_chart_code(dataframe):
     prompt = f"""
-    Generate Plotly chart code for the given pandas DataFrame with columns: {', '.join(dataframe.columns)}. The chart should be informative and visually appealing.
-
+    You are an expert in data visualization. Given a pandas DataFrame with the following columns: {', '.join(dataframe.columns)}, generate the best charting code using Plotly. The code should produce an informative and visually appealing chart.
+    
     Data to be plotted:
-    {dataframe.head().to_string(index=False)}
-
-    Chart Code:
+    {dataframe}
     """
 
     full_prompt = [
-        {"role": "system", "content": "You are an expert in data visualization using Plotly. Use the given DataFrame to generate professional and appealing chart code. The DataFrame will be provided as 'df'."},
+        {"role": "system", "content": "You are an expert in data visualization using Plotly. Brand colour is purple, use majorly white and purple shades. give proper visible dark legends, title, and data axis for white background. Make a 3D looking chart in 2D, that looks professional and super appealing. use valid hex color code as color id in code. Start python code with string '```python' and end with '```'"},
         {"role": "user", "content": prompt}
     ]
-    
-    try:
-        stream = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=full_prompt,
-            stream=True,
-        )
-        
-        chart_code_response = ""
-        for chunk in stream:
-            if chunk.choices[0].delta.content is not None:
-                chart_code_response += chunk.choices[0].delta.content
-                #st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
-        return chart_code_response.strip()
-    except Exception as e:
-        st.error(f"Error generating chart code: {e}")
-        return ""
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4o",
+        messages=full_prompt,
+        max_tokens=4000,
+        temperature=0.5,
+        n=1,
+        stop=None
+    )
+    return response.choices[0]['message']['content'].strip()
 
 def extract_code_from_response(response):
     code_block = re.search(r'```python(.*?)```', response, re.DOTALL)
