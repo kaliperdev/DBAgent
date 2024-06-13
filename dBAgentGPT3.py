@@ -150,18 +150,19 @@ Data to be plotted:
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4o",
+            model="gpt-4",
             messages=full_prompt,
             max_tokens=4000,
             temperature=0.5,
             n=1,
             stop=None
         )
-        chart_code_response = response['choices'][0]['message']['content'].strip()
+        chart_code_response = response.choices[0].message['content'].strip()
         return chart_code_response
     except Exception as e:
         st.error(f"Error generating chart code: {e}")
         return ""
+
 
 
 def extract_code_from_response(response):
