@@ -54,7 +54,7 @@ def generate_sql(conversation):
     {schema_info}
 
     # Examples:
-    # examples}
+    # examples
 
     Conversation:
     {conversation}
