@@ -1,0 +1,34 @@
+Table Name,Column Name,Column Description,Table Description
+RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS,properties_utm_current_born_on_date,Date of the current UTM born event. This date is also the date of Optin Stage. We can consider this as a date of registration for the customer.,Hubspot User Info Table
+RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS,properties_clickfunnel_id,Funnel ID associated with the contact,Hubspot User Info Table
+RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS,properties_email,Email address of the contact,Hubspot User Info Table
+RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS,properties_utm_content_current,Current UTM content,Hubspot User Info Table
+RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS,properties_hs_date_entered_contractsent,"Whenever there is a meeting scheduled, this column populates. So we can use this to count Scheduled Stage",Hubspot User Info Table
+RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_CONTACTS,PROPERTIES_JOTFORM_RESULTS,"Qualified','ATA Lite Strat', 'Qualified+' filter to identify which users have qualified. Should be used to find Qualified Stage
+if not null then all those users have done Application. Should be used to find Application Stage",Hubspot User Info Table
+RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1,reports_sheet,Funnel Name,"Manually Updated Sheet to be used to match FunnelID with Funnel Name, and Funnel Group Name"
+RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1,clickfunnel_id,Funnel ID,"Manually Updated Sheet to be used to match FunnelID with Funnel Name, and Funnel Group Name"
+RUDDER_EVENTS.G_SHEET_FUNNEL_MAPPING.RUDDER_SHEET_1,_GROUP,Funnel Group/Group associated with the funnel,"Manually Updated Sheet to be used to match FunnelID with Funnel Name, and Funnel Group Name"
+RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS,properties_email,Email address of the contact,Hubspot Deal Info Table
+RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS,properties_amount,Revenue/Ticket Size,Hubspot Deal Info Table
+RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS,properties_discount_amount,Discount on Purchase,Hubspot Deal Info Table
+RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS,properties_payment_amount,"Amount Actually Paid | if properties_payment_amount>0, then only that is deals in deals table",Hubspot Deal Info Table
+RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS,properties_pipeline,"deal pipeline: ""default"" for deals and meetings",Hubspot Deal Info Table
+RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS,properties_dealstage,"dealstage = ('76235851','76235852', '76235853','76235854','76235855') for meetingheld in deals table",Hubspot Deal Info Table
+RUDDER_EVENTS.HUBSPOT_DEV.HUBSPOT_DATA_RUDDER_DEALS,properties_closedate,Close date of the deal,Hubspot Deal Info Table
+RUDDER_EVENTS.NURP_VIA.META_ADS_DATA_RUDDER_ADS_INSIGHTS,DATE_START,Report Date of the ad campaign,Table for Facebook Daily Ads Spend Insight Data. Account1: Meta_Ads
+RUDDER_EVENTS.NURP_VIA.META_ADS_DATA_RUDDER_ADS_INSIGHTS,spend,Amount spent on the ad campaign,Table for Facebook Daily Ads Spend Insight Data. Account1: Meta_Ads
+RUDDER_EVENTS.NURP_VIA.META_ADS_DATA_RUDDER_ADS_INSIGHTS,campaign_name,"Name of the ad campaign| SPLIT_PART(campaign_name, '|', 2) to get the campaign_id to join to mapping Sheet",Table for Facebook Daily Ads Spend Insight Data. Account1: Meta_Ads
+RUDDER_EVENTS.NURP_ADS_ACCOUNT.FB_ADS_NURPRUDDER_ADS_INSIGHTS,DATE_START,Report Date of the ad campaign,Table for Facebook Daily Ads Spend Insight Data. Account2: FB_Ads
+RUDDER_EVENTS.NURP_ADS_ACCOUNT.FB_ADS_NURPRUDDER_ADS_INSIGHTS,spend,Amount spent on the ad campaign,Table for Facebook Daily Ads Spend Insight Data. Account2: FB_Ads
+RUDDER_EVENTS.NURP_ADS_ACCOUNT.FB_ADS_NURPRUDDER_ADS_INSIGHTS,campaign_name,"Name of the ad campaign| SPLIT_PART(campaign_name, '|', 2) to get the campaign_id to join to mapping Sheet",Table for Facebook Daily Ads Spend Insight Data. Account2: FB_Ads
+RUDDER_EVENTS.ADS_MAPPING.RUDDER_CAMPAIGN,funnel_strategy,Funnel Name,Table containing campaignID to Funnel Name Mapping
+RUDDER_EVENTS.ADS_MAPPING.RUDDER_CAMPAIGN,campaign_id,Campaign ID,Table containing campaignID to Funnel Name Mapping
+hubspot_nurp_payments.webhook_source_event,PROPERTIES_HS_INITIATED_DATE_TIMESTAMP,Payment Date,Table Containing Payment Events
+hubspot_nurp_payments.webhook_source_event,PROPERTIES_HS_CUSTOMER_EMAIL_VALUE,Customer Email,Table Containing Payment Events
+hubspot_nurp_payments.webhook_source_event,PROPERTIES_HS_TOTAL_COLLECTED_AMOUNT_AFTER_REFUNDS_VALUE,Total Amount excluding Discount,Table Containing Payment Events
+hubspot_nurp_payments.webhook_source_event,PROPERTIES_HS_LATEST_STATUS_VALUE,Status of the Payment,Table Containing Payment Events
+hubspot_nurp_payments.webhook_source_event,PROPERTIES_HS_PAYMENT_SOURCE_NAME_VALUE,Payment Source Name,Table Containing Payment Events
+gsheet_subscription_source_name.subscription_names,names,Subscription Names from Mapping Sheet,Manual Mapping Sheet
+schedule_once.webhook_source_event,timestamp,Timestamp,Schedule Once  App Webhook trigger to be used for scheduled numbers
+schedule_once.webhook_source_event,DATA_FORM_SUBMISSION_EMAIL,email of user for the scheduled meeting,Schedule Once  App Webhook trigger to be used for scheduled numbers
