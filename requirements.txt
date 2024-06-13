@@ -1,7 +1,7 @@
 pandas
 openai
 streamlit
-openai==0.28
+openai
 snowflake-connector-python
 plotly
 tiktoken
