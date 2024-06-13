@@ -82,7 +82,7 @@ def generate_sql(conversation):
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 sql_query += chunk.choices[0].delta.content
-                #st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
+                st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
         return sql_query.strip()
     except Exception as e:
         st.error(f"Error generating SQL: {e}")
@@ -115,7 +115,7 @@ def handle_error(query, error):
         stream = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are an expert SQL query writer for Snowflake databases. Resolve SQL errors using the provided schema and conversation context."},
+                {"role": "system", "content": "You are an expert SQL query writer for Snowflake databases. Resolve SQL errors using the provided schema and conversation context. Include 'Corrected SQL Query:' before your query."},
                 {"role": "user", "content": prompt}
             ],
             stream=True,
@@ -125,7 +125,7 @@ def handle_error(query, error):
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 corrected_sql_query += chunk.choices[0].delta.content
-                #st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
+                st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
         return corrected_sql_query.strip()
     except Exception as e:
         st.error(f"Error correcting SQL: {e}")
@@ -136,13 +136,13 @@ def generate_chart_code(dataframe):
     Generate Plotly chart code for the given pandas DataFrame with columns: {', '.join(dataframe.columns)}. The chart should be informative and visually appealing.
 
     Data to be plotted:
-    {dataframe}
+    {dataframe.to_string(index=False)}
 
     Chart Code:
     """
 
     full_prompt = [
-        {"role": "system", "content": "You are an expert in data visualization using Plotly. Use the given DataFrame to generate professional and appealing chart code."},
+        {"role": "system", "content": "You are an expert in data visualization using Plotly. Use the given DataFrame to generate professional and appealing chart code. The DataFrame will be provided as 'df'."},
         {"role": "user", "content": prompt}
     ]
     
