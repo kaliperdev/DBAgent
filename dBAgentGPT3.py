@@ -8,6 +8,7 @@ import tiktoken
 import re
 from plotly.subplots import make_subplots
 import plotly.graph_objs as go
+from openai import OpenAI
 
 # Ensure session state is initialized at the very beginning
 if 'messages' not in st.session_state:
@@ -23,6 +24,7 @@ SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
 SNOWFLAKE_ROLE = "Rudder"
 
 openai.api_key = st.secrets.credentials.api_key
+client = OpenAI()
 
 def execute_query(query):
     try:
@@ -63,19 +65,21 @@ def generate_sql(conversation):
     ]
 
     enc = tiktoken.get_encoding("cl100k_base")
-
     token_count = sum([len(enc.encode(message["content"])) for message in full_prompt])
     st.write(token_count)
 
-    response = openai.ChatCompletion.create(
+    stream = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=full_prompt,
-        max_tokens=4000,
-        temperature=0.5,
-        n=1,
-        stop=None
+        stream=True,
     )
-    return response.choices[0]['message']['content'].strip()
+    
+    sql_query = ""
+    for chunk in stream:
+        if chunk.choices[0].delta.content is not None:
+            sql_query += chunk.choices[0].delta.content
+            st.write(chunk.choices[0].delta.content, end="")  # Displaying the stream content in real-time in Streamlit
+    return sql_query.strip()
 
 def handle_error(query, error):
     prompt = f"""
@@ -90,18 +94,22 @@ def handle_error(query, error):
     Conversation:
     {conversation}
     """
-    response = openai.ChatCompletion.create(
+    
+    stream = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response, apart from text 'Generated SQL Query:' and don't write anything after the query ends."},
             {"role": "user", "content": prompt}
         ],
-        max_tokens=4000,
-        temperature=0.5,
-        n=1,
-        stop=None
+        stream=True,
     )
-    return response.choices[0]['message']['content'].strip()
+    
+    corrected_sql_query = ""
+    for chunk in stream:
+        if chunk.choices[0].delta.content is not None:
+            corrected_sql_query += chunk.choices[0].delta.content
+            st.write(chunk.choices[0].delta.content, end="")  # Displaying the stream content in real-time in Streamlit
+    return corrected_sql_query.strip()
 
 def extract_query_from_message(content):
     if "Generated SQL Query:" in content:
@@ -125,16 +133,19 @@ def generate_chart_code(dataframe):
         {"role": "system", "content": "You are an expert in data visualization using Plotly. Brand colour is purple, use majorly white and purple shades. give proper visible dark legends, title, and data axis for white background. Make a 3D looking chart in 2D, that looks professional and super appealing. use valid hex color code as color id in code. Start python code with string '```python' and end with '```'"},
         {"role": "user", "content": prompt}
     ]
-
-    response = openai.ChatCompletion.create(
+    
+    stream = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=full_prompt,
-        max_tokens=4000,
-        temperature=0.5,
-        n=1,
-        stop=None
+        stream=True,
     )
-    return response.choices[0]['message']['content'].strip()
+    
+    chart_code_response = ""
+    for chunk in stream:
+        if chunk.choices[0].delta.content is not None:
+            chart_code_response += chunk.choices[0].delta.content
+            st.write(chunk.choices[0].delta.content, end="")  # Displaying the stream content in real-time in Streamlit
+    return chart_code_response.strip()
 
 def extract_code_from_response(response):
     code_block = re.search(r'```python(.*?)```', response, re.DOTALL)
