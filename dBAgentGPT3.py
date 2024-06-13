@@ -149,8 +149,8 @@ def generate_chart_code(dataframe):
     ]
 
     try:
-        response = client.chat_completions.create(
-            model="gpt-3.5-turbo",
+        response = client.chat.completions.create(
+            model="gpt-4o",
             messages=full_prompt,
             max_tokens=4000,
             temperature=0.5,
