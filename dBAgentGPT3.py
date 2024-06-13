@@ -149,15 +149,15 @@ def generate_chart_code(dataframe):
     ]
 
     try:
-        response = client.chat.completions.create(
-            model="gpt-4o",
+        response = client.chat_completions.create(
+            model="gpt-3.5-turbo",
             messages=full_prompt,
             max_tokens=4000,
             temperature=0.5,
             n=1,
             stop=None
         )
-        return response.choices[0]['message']['content'].strip()
+        return response.choices[0].message['content'].strip()
     except Exception as e:
         st.error(f"Error generating chart code: {e}")
         return ""
