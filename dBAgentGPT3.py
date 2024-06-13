@@ -137,11 +137,11 @@ def generate_chart_code(dataframe):
         return ""
 
     prompt = f"""
-    You are an expert in data visualization. Given a pandas DataFrame with the following columns: {', '.join(dataframe.columns)}, generate the best charting code using Plotly. The code should produce an informative and visually appealing chart.
+You are an expert in data visualization. Given a pandas DataFrame with the following columns: {', '.join(dataframe.columns)}, generate the best charting code using Plotly. The code should produce an informative and visually appealing chart.
 
-    Data to be plotted:
-    {dataframe.head().to_string(index=False)}
-    """
+Data to be plotted:
+{dataframe.head().to_string(index=False)}
+"""
 
     full_prompt = [
         {"role": "system", "content": "You are an expert in data visualization using Plotly. Use the given DataFrame, identify x axis and y axis properly. you can give multiple charts if one is not enough for the data. generate professional and appealing chart code. The DataFrame will be provided as 'df'."},
@@ -149,7 +149,7 @@ def generate_chart_code(dataframe):
     ]
 
     try:
-        response = client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-4o",
             messages=full_prompt,
             max_tokens=4000,
@@ -157,10 +157,12 @@ def generate_chart_code(dataframe):
             n=1,
             stop=None
         )
-        return response.choices[0].message['content'].strip()
+        chart_code_response = response['choices'][0]['message']['content'].strip()
+        return chart_code_response
     except Exception as e:
         st.error(f"Error generating chart code: {e}")
         return ""
+
 
 def extract_code_from_response(response):
     code_block = re.search(r'```python(.*?)```', response, re.DOTALL)
