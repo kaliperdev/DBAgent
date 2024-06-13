@@ -144,7 +144,7 @@ def generate_chart_code(dataframe):
     """
 
     full_prompt = [
-        {"role": "system", "content": "You are an expert in data visualization using Plotly. Use the given DataFrame to generate professional and appealing chart code. The DataFrame will be provided as 'df'."},
+        {"role": "system", "content": "You are an expert in data visualization using Plotly. Use the given DataFrame, identify x axis and y axis properly. you can give multiple charts if one is not enough for the data. generate professional and appealing chart code. The DataFrame will be provided as 'df'."},
         {"role": "user", "content": prompt}
     ]
 
