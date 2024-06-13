@@ -144,7 +144,7 @@ def generate_chart_code(dataframe):
         {"role": "user", "content": prompt}
     ]
 
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4o",
         messages=full_prompt,
         max_tokens=4000,
