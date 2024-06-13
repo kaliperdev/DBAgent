@@ -115,7 +115,7 @@ def handle_error(query, error):
         stream = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are an expert SQL query writer for Snowflake databases. Resolve SQL errors using the provided schema and conversation context. Include 'Corrected SQL Query:' before your query."},
+                {"role": "system", "content": "You are an expert SQL query writer for Snowflake databases. Resolve SQL errors using the provided schema and conversation context. "},
                 {"role": "user", "content": prompt}
             ],
             stream=True,
