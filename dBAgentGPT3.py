@@ -73,7 +73,7 @@ def generate_sql(conversation):
 
     try:
         stream = client.chat.completions.create(
-            model="ft:gpt-3.5-turbo-0125:cubestack-solutions::9ZdYPGXy",
+            model="ft:gpt-3.5-turbo-0125:cubestack-solutions::9Zg408OA",
             messages=full_prompt,
             stream=True,
         )
@@ -113,7 +113,7 @@ def handle_error(query, error):
     
     try:
         stream = client.chat.completions.create(
-            model="ft:gpt-3.5-turbo-0125:cubestack-solutions::9ZdYPGXy",
+            model="ft:gpt-3.5-turbo-0125:cubestack-solutions::9Zg408OA",
             messages=[
                 {"role": "system", "content": "You are an expert SQL query writer for Snowflake databases. Resolve SQL errors using the provided schema and conversation context. "},
                 {"role": "user", "content": prompt}
