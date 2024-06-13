@@ -48,7 +48,7 @@ def execute_query(query):
 
 def generate_sql(conversation):
     prompt = f"""
-    You are an expert SQL query writer. Given the following schema and examples, generate a SQL query for the given question. Be mindful of the following: 1. The query should only contain tables and columns combinations as per the schema. For help in generating the query, refer to the examples. If there is no schema passed. Display message that no schema available for this query.
+    Generate an SQL query based on the given conversation, schema, and examples. Follow the schema strictly and use the format from the examples provided.
 
     Schema:
     {schema_info}
@@ -58,33 +58,39 @@ def generate_sql(conversation):
 
     Conversation:
     {conversation}
+
+    Generated SQL Query:
     """
 
     full_prompt = [
-        {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. These queries should follow format from examples and Schema file. Query should not be out of schema provided, this is most crucial, especially make sure of schema when you are giving join statements with ON clause, and filters. Dont Assume. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier, apart from text 'Generated SQL Query:', and don't write anything after the query ends."},
+        {"role": "system", "content": "You are an expert SQL query writer for Snowflake databases. Use the provided schema and examples to generate accurate SQL queries. Make sure to use the exact table and column names from the schema."},
         {"role": "user", "content": prompt}
     ]
 
     enc = tiktoken.get_encoding("cl100k_base")
     token_count = sum([len(enc.encode(message["content"])) for message in full_prompt])
-    st.write(token_count)
+    st.write(f"Token count: {token_count}")
 
-    stream = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=full_prompt,
-        stream=True,
-    )
+    try:
+        stream = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=full_prompt,
+            stream=True,
+        )
 
-    sql_query = ""
-    for chunk in stream:
-        if chunk.choices[0].delta.content is not None:
-            sql_query += chunk.choices[0].delta.content
-            st.write(chunk.choices[0].delta.content, end="")  # Displaying the stream content in real-time in Streamlit
-    return sql_query.strip()
+        sql_query = ""
+        for chunk in stream:
+            if chunk.choices[0].delta.content is not None:
+                sql_query += chunk.choices[0].delta.content
+                st.write(chunk.choices[0].delta.content, end="")  # Displaying the stream content in real-time in Streamlit
+        return sql_query.strip()
+    except Exception as e:
+        st.error(f"Error generating SQL: {e}")
+        return ""
 
 def handle_error(query, error):
     prompt = f"""
-    Given the following SQL, and the error from Snowflake, along with user conversation. Resolve this. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response
+    Resolve the following SQL error for the given query based on the provided schema and conversation.
 
     Error:
     {error}
@@ -94,23 +100,29 @@ def handle_error(query, error):
 
     Conversation:
     {conversation}
+
+    Corrected SQL Query:
     """
     
-    stream = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response, apart from text 'Generated SQL Query:' and don't write anything after the query ends."},
-            {"role": "user", "content": prompt}
-        ],
-        stream=True,
-    )
-    
-    corrected_sql_query = ""
-    for chunk in stream:
-        if chunk.choices[0].delta.content is not None:
-            corrected_sql_query += chunk.choices[0].delta.content
-            st.write(chunk.choices[0].delta.content, end="")  # Displaying the stream content in real-time in Streamlit
-    return corrected_sql_query.strip()
+    try:
+        stream = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are an expert SQL query writer for Snowflake databases. Resolve SQL errors using the provided schema and conversation context. Include 'Corrected SQL Query:' before your query."},
+                {"role": "user", "content": prompt}
+            ],
+            stream=True,
+        )
+        
+        corrected_sql_query = ""
+        for chunk in stream:
+            if chunk.choices[0].delta.content is not None:
+                corrected_sql_query += chunk.choices[0].delta.content
+                st.write(chunk.choices[0].delta.content, end="")  # Displaying the stream content in real-time in Streamlit
+        return corrected_sql_query.strip()
+    except Exception as e:
+        st.error(f"Error correcting SQL: {e}")
+        return ""
 
 def extract_query_from_message(content):
     if "Generated SQL Query:" in content:
@@ -124,29 +136,35 @@ def extract_query_from_message(content):
 
 def generate_chart_code(dataframe):
     prompt = f"""
-    You are an expert in data visualization. Given a pandas DataFrame with the following columns: {', '.join(dataframe.columns)}, generate the best charting code using Plotly. The code should produce an informative and visually appealing chart.
+    Generate Plotly chart code for the given pandas DataFrame with columns: {', '.join(dataframe.columns)}. The chart should be informative and visually appealing.
 
     Data to be plotted:
     {dataframe}
+
+    Chart Code:
     """
 
     full_prompt = [
-        {"role": "system", "content": "You are an expert in data visualization using Plotly. Brand colour is purple, use majorly white and purple shades. give proper visible dark legends, title, and data axis for white background. Make a 3D looking chart in 2D, that looks professional and super appealing. use valid hex color code as color id in code. Start python code with string '```python' and end with '```'"},
+        {"role": "system", "content": "You are an expert in data visualization using Plotly. Use the given DataFrame to generate professional and appealing chart code."},
         {"role": "user", "content": prompt}
     ]
     
-    stream = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=full_prompt,
-        stream=True,
-    )
-    
-    chart_code_response = ""
-    for chunk in stream:
-        if chunk.choices[0].delta.content is not None:
-            chart_code_response += chunk.choices[0].delta.content
-            st.write(chunk.choices[0].delta.content, end="")  # Displaying the stream content in real-time in Streamlit
-    return chart_code_response.strip()
+    try:
+        stream = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=full_prompt,
+            stream=True,
+        )
+        
+        chart_code_response = ""
+        for chunk in stream:
+            if chunk.choices[0].delta.content is not None:
+                chart_code_response += chunk.choices[0].delta.content
+                st.write(chunk.choices[0].delta.content, end="")  # Displaying the stream content in real-time in Streamlit
+        return chart_code_response.strip()
+    except Exception as e:
+        st.error(f"Error generating chart code: {e}")
+        return ""
 
 def extract_code_from_response(response):
     code_block = re.search(r'```python(.*?)```', response, re.DOTALL)
@@ -175,12 +193,11 @@ if api_key:
 
     if st.button("Send"):
         if user_question:
-            
             conversation = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state.messages])
             sql_query = generate_sql(conversation + f"\nUser: {user_question}")
-            actual_sql_query = extract_query_from_message(sql_query)
             st.session_state.messages.append({"role": "user", "content": user_question})
             st.session_state.messages.append({"role": "assistant", "content": sql_query})
+            actual_sql_query = extract_query_from_message(sql_query)
             
             result = execute_query(actual_sql_query)
             
