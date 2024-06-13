@@ -82,11 +82,18 @@ def generate_sql(conversation):
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 sql_query += chunk.choices[0].delta.content
-                st.write(chunk.choices[0].delta.content, end="")  # Displaying the stream content in real-time in Streamlit
+                st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
         return sql_query.strip()
     except Exception as e:
         st.error(f"Error generating SQL: {e}")
         return ""
+
+def extract_query_from_message(content):
+    # Extract the SQL query from the message content
+    match = re.search(r'```sql(.*?)```', content, re.DOTALL)
+    if match:
+        return match.group(1).strip()
+    return content
 
 def handle_error(query, error):
     prompt = f"""
@@ -108,7 +115,7 @@ def handle_error(query, error):
         stream = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are an expert SQL query writer for Snowflake databases. Resolve SQL errors using the provided schema and conversation context. Include 'Corrected SQL Query:' before your query."},
+                {"role": "system", "content": "You are an expert SQL query writer for Snowflake databases. Resolve SQL errors using the provided schema and conversation context."},
                 {"role": "user", "content": prompt}
             ],
             stream=True,
@@ -118,21 +125,11 @@ def handle_error(query, error):
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 corrected_sql_query += chunk.choices[0].delta.content
-                st.write(chunk.choices[0].delta.content, end="")  # Displaying the stream content in real-time in Streamlit
+                st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
         return corrected_sql_query.strip()
     except Exception as e:
         st.error(f"Error correcting SQL: {e}")
         return ""
-
-def extract_query_from_message(content):
-    if "Generated SQL Query:" in content:
-        query_part = content.split("Generated SQL Query:", 1)[1].strip()
-        if query_part.startswith("```sql") and query_part.endswith("```"):
-            return query_part[6:-3].strip()
-        elif query_part.startswith("```") and query_part.endswith("```"):
-            return query_part[3:-3].strip()
-        return query_part
-    return content
 
 def generate_chart_code(dataframe):
     prompt = f"""
@@ -160,7 +157,7 @@ def generate_chart_code(dataframe):
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 chart_code_response += chunk.choices[0].delta.content
-                st.write(chunk.choices[0].delta.content, end="")  # Displaying the stream content in real-time in Streamlit
+                st.write(chunk.choices[0].delta.content)  # Displaying the stream content in real-time in Streamlit
         return chart_code_response.strip()
     except Exception as e:
         st.error(f"Error generating chart code: {e}")
