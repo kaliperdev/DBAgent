@@ -75,7 +75,7 @@ def generate_pseudocode(conversation):
         model="gpt-4o",
         messages=full_prompt,
     )
-    return response.choices[0]['message']['content'].strip()
+    return response.choices[0].message.content.strip()
 
 def generate_sql(pseudocode):
     prompt = f"""
@@ -94,7 +94,7 @@ def generate_sql(pseudocode):
         model="gpt-4o",
         messages=full_prompt,
     )
-    return response.choices[0]['message']['content'].strip()
+    return response.choices[0].message.content.strip()
 
 def handle_error(query, error):
     prompt = f"""
@@ -117,7 +117,7 @@ def handle_error(query, error):
         ],
 
     )
-    return response.choices[0]['message']['content'].strip()
+    return response.choices[0].message.content.strip
 
 def extract_query_from_message(content):
     if "Generated SQL Query:" in content:
@@ -151,7 +151,7 @@ def generate_chart_code(dataframe):
         messages=full_prompt,
 
     )
-    return response.choices[0]['message']['content'].strip()
+    return response.choices[0].message.content.strip
 
 def extract_code_from_response(response):
     # Use regex to extract code block between ```python and ```
