@@ -81,6 +81,12 @@ def generate_sql(pseudocode):
     prompt = f"""
     You are an expert SQL query writer. Given the following pseudocode, generate a SQL query for the given question. Be mindful of the following: 1. The query should only contain tables and columns combinations as per the schema. For help in generating the query, refer to the examples. If there is no schema passed, display message that no schema is available for this query.
 
+    
+    Schema:
+    {schema_info}
+
+    Examples:
+    {examples}
 
     Pseudocode:
     {pseudocode}
