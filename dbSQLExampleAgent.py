@@ -13,6 +13,10 @@ import plotly.graph_objs as go
 # Ensure session state is initialized at the very beginning
 if 'messages' not in st.session_state:
     st.session_state.messages = []
+if 'pseudocode' not in st.session_state:
+    st.session_state.pseudocode = ""
+if 'sql_query' not in st.session_state:
+    st.session_state.sql_query = ""
 
 
 # Check and prompt for Snowflake credentials
@@ -28,7 +32,6 @@ SNOWFLAKE_ROLE = "Rudder"
 openai.api_key = st.secrets.credentials.api_key
 
 def execute_query(query):
-
     try:
         conn = snowflake.connector.connect(
             user=SNOWFLAKE_USER,
@@ -47,9 +50,9 @@ def execute_query(query):
     except Exception as e:
         return str(e)
 
-def generate_sql(conversation):
+def generate_pseudocode(conversation):
     prompt = f"""
-    You are an expert SQL query writer. Given the following schema and examples, generate a SQL query for the given question. Be mindful of the following: 1. The query should only contain tables and columns combinations as per the schema. For help in generating the query, refer to the examples. If there is no schema passed. Display message that no schema available for this query.
+    You are an expert in designing pseudocode for Snowflake SQL query generation. Given the following schema and examples, generate pseudocode for the given question. The pseudocode should include table names, column names, join types, and join conditions. 
 
     Schema:
     {schema_info}
@@ -62,27 +65,35 @@ def generate_sql(conversation):
     """
 
     full_prompt = [
-        {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. These queries should follow format from examples and Schema file. Query should not be out of schema provided, this is most crucial, especially make sure of schema when you are giving join statements with ON clause, and filters. Dont Assume.  Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier, apart from text 'Generated SQL Query:', and don't write anything after the query ends."},
+        {"role": "system", "content": "You are an expert in designing pseudocode for Snowflake SQL query generation. Generate pseudocode including table names, column names, join types, and join conditions."},
         {"role": "user", "content": prompt}
     ]
 
-    # Tokenizer
-    enc = tiktoken.get_encoding("cl100k_base")
-
-    # Calculate token count for each message
-    token_count = sum([len(enc.encode(message["content"])) for message in full_prompt])
-    st.write(token_count)
-    # Print token count and full prompt for debugging
-    print(f"Total token count: {token_count}")
-    print("Full prompt being sent:")
-    #st.write(full_prompt)
-    
-    # # Ensure token count is within the model's limit
-    # if token_count > 4096:  # Adjust based on model's token limit (e.g., 4096 for GPT-4)
-    #     raise ValueError("Prompt is too long and exceeds the token limit for the model.")
-    
     response = openai.ChatCompletion.create(
-        model="gpt-4o",
+        model="gpt-4",
+        messages=full_prompt,
+        max_tokens=1500,
+        temperature=0.5,
+        n=1,
+        stop=None
+    )
+    return response.choices[0]['message']['content'].strip()
+
+def generate_sql(pseudocode):
+    prompt = f"""
+    You are an expert SQL query writer. Given the following pseudocode, generate a SQL query for the given question. Be mindful of the following: 1. The query should only contain tables and columns combinations as per the schema. For help in generating the query, refer to the examples. If there is no schema passed, display message that no schema is available for this query.
+
+    Pseudocode:
+    {pseudocode}
+    """
+
+    full_prompt = [
+        {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. These queries should follow format from examples and Schema file. Query should not be out of schema provided, this is most crucial, especially make sure of schema when you are giving join statements with ON clause, and filters. Don't Assume. Also add 'Generated SQL Query:' term just before SQL query to identify, don't add any other identifier, apart from text 'Generated SQL Query:', and don't write anything after the query ends."},
+        {"role": "user", "content": prompt}
+    ]
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
         messages=full_prompt,
         max_tokens=4000,
         temperature=0.5,
@@ -93,7 +104,7 @@ def generate_sql(conversation):
 
 def handle_error(query, error):
     prompt = f"""
-    Given the following SQL, and the error from Snowflake, along with user conversation. Resolve this. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response
+    Given the following SQL, and the error from Snowflake, along with user conversation. Resolve this. Also add 'Generated SQL Query:' term just before SQL query to identify, don't add any other identifier like 'sql' or '`' in response
 
     Error:
     {error}
@@ -103,12 +114,11 @@ def handle_error(query, error):
 
     Conversation:
     {conversation}
-
     """
     response = openai.ChatCompletion.create(
-        model="gpt-4o",
+        model="gpt-4",
         messages=[
-            {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response, apart from text 'Generated SQL Query:' and don't write anything after the query ends."},
+            {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. Also add 'Generated SQL Query:' term just before SQL query to identify, don't add any other identifier like 'sql' or '`' in response, apart from text 'Generated SQL Query:' and don't write anything after the query ends."},
             {"role": "user", "content": prompt}
         ],
         max_tokens=4000,
@@ -146,7 +156,7 @@ def generate_chart_code(dataframe):
     ]
 
     response = openai.ChatCompletion.create(
-        model="gpt-4o",
+        model="gpt-4",
         messages=full_prompt,
         max_tokens=4000,
         temperature=0.5,
@@ -187,50 +197,61 @@ if openai.api_key:
     # Streamlit interface
     user_question = st.text_input("Define your Marketing Analytics Requirements:")
 
-    if st.button("Send"):
+    if st.button("Generate Pseudocode"):
         if user_question:
             conversation = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state.messages])
-            sql_query = generate_sql(conversation + f"\nUser: {user_question}")
+            pseudocode = generate_pseudocode(conversation + f"\nUser: {user_question}")
             st.session_state.messages.append({"role": "user", "content": user_question})
-            st.session_state.messages.append({"role": "assistant", "content": sql_query})
-            actual_sql_query = extract_query_from_message(sql_query)
-            
-            result = execute_query(actual_sql_query)
-            
-            if "SQL compilation error" in result:
-                st.error(f"SQL compilation error: {result}")
-                corrected_sql_query = handle_error(actual_sql_query, result)
-                st.session_state.messages.append({"role": "assistant", "content": corrected_sql_query})
-                corrected_sql_query_text = extract_query_from_message(corrected_sql_query)
-                result = execute_query(corrected_sql_query_text)
-                if "SQL compilation error" in result:
-                    st.error(f"Error executing corrected query: {result}")
-                else:
-                    st.write("### Corrected Query Result")
-                    st.write(result)
-                    st.session_state.messages.append({"role": "assistant", "content": corrected_sql_query_text})
-            else:
-                st.write("### Query Result")
-                #st.write(result)
-                st.session_state.messages.append({"role": "assistant", "content": result})
-                # Generate and display the chart
+            st.session_state.messages.append({"role": "assistant", "content": pseudocode})
+            st.session_state.pseudocode = pseudocode
 
-                chart_code_response = generate_chart_code(result)
-                st.write("### Chart Code Response")
-                # st.write(chart_code_response)
-                chart_code = extract_code_from_response(chart_code_response)
-                #st.code(chart_code, language='python')
-                try:
-                    # Define the local scope for exec to capture the figure
-                    local_scope = {}
-                    exec(chart_code, {'pd': pd, 'px': px, 'go': go, 'make_subplots': make_subplots, 'df': result}, local_scope)
-                    fig = local_scope.get('fig')
-                    if fig:
-                        st.plotly_chart(fig)
-                    else:
-                        st.error("No figure found in the generated code.")
-                except Exception as e:
-                    st.error(f"Error executing chart code: {e}")
+    if st.session_state.pseudocode:
+        st.subheader("Generated Pseudocode")
+        pseudocode_input = st.text_area("Review or Edit Pseudocode", st.session_state.pseudocode, height=200)
+
+        if st.button("Generate SQL from Pseudocode"):
+            sql_query = generate_sql(pseudocode_input)
+            st.session_state.sql_query = sql_query
+            st.session_state.pseudocode = pseudocode_input
+
+    if st.session_state.sql_query:
+        st.subheader("Generated SQL Query")
+        st.code(st.session_state.sql_query, language='sql')
+        actual_sql_query = extract_query_from_message(st.session_state.sql_query)
+        
+        result = execute_query(actual_sql_query)
+        
+        if "SQL compilation error" in result:
+            st.error(f"SQL compilation error: {result}")
+            corrected_sql_query = handle_error(actual_sql_query, result)
+            st.session_state.messages.append({"role": "assistant", "content": corrected_sql_query})
+            corrected_sql_query_text = extract_query_from_message(corrected_sql_query)
+            result = execute_query(corrected_sql_query_text)
+            if "SQL compilation error" in result:
+                st.error(f"Error executing corrected query: {result}")
+            else:
+                st.write("### Corrected Query Result")
+                st.write(result)
+                st.session_state.messages.append({"role": "assistant", "content": corrected_sql_query_text})
+        else:
+            st.write("### Query Result")
+            st.session_state.messages.append({"role": "assistant", "content": result})
+            # Generate and display the chart
+
+            chart_code_response = generate_chart_code(result)
+            st.write("### Chart Code Response")
+            chart_code = extract_code_from_response(chart_code_response)
+            try:
+                # Define the local scope for exec to capture the figure
+                local_scope = {}
+                exec(chart_code, {'pd': pd, 'px': px, 'go': go, 'make_subplots': make_subplots, 'df': result}, local_scope)
+                fig = local_scope.get('fig')
+                if fig:
+                    st.plotly_chart(fig)
+                else:
+                    st.error("No figure found in the generated code.")
+            except Exception as e:
+                st.error(f"Error executing chart code: {e}")
 
     # Display chat history
     st.write("### Chat History")
@@ -238,7 +259,6 @@ if openai.api_key:
         if message['role'] == 'user':
             st.write(f"**User:** {message['content']}")
         else:
-            #st.write(f"**Assistant:** {message['content']}")
             try:
                 fig = px.line(result)  # Example chart, customize based on your data
                 st.plotly_chart(fig)
@@ -248,4 +268,3 @@ if openai.api_key:
             st.write(result)
 else:
     st.warning(f"Please enter your OpenAI API key to proceed. {st.secrets.credentials.sf_password}")
-
