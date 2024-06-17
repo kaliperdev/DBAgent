@@ -67,7 +67,7 @@ def generate_pseudocode(conversation):
     """
 
     full_prompt = [
-        {"role": "system", "content": "You are an expert in designing pseudocode for Snowflake SQL query generation. Generate human-readable pseudocode, also give a table containing table names, column names, join types, and join conditions."},
+        {"role": "system", "content": "You are an expert in designing pseudocode for Snowflake SQL query generation. Generate human-readable pseudocode, also give a table containing table names, column names, join types, and join conditions. DOnt give SQL query in pseudocode. Keep it clean and to the point."},
         {"role": "user", "content": prompt}
     ]
 
