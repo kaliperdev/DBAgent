@@ -54,7 +54,7 @@ def execute_query(query):
 
 def generate_pseudocode(conversation):
     prompt = f"""
-    You are an expert in designing pseudocode for Snowflake SQL query generation. Given the following schema and examples, generate pseudocode for the given question. The pseudocode should include table names, column names, join types, and join conditions in tabular format which user can edit. 
+    You are an expert in designing pseudocode for Snowflake SQL query generation. Given the following schema and examples, generate pseudocode for the given question. The pseudocode should include table names, column names, join types, and join conditions in tabular format which user can edit. Dont give SQL query in pseudocode.
 
     Schema:
     {schema_info}
@@ -67,7 +67,7 @@ def generate_pseudocode(conversation):
     """
 
     full_prompt = [
-        {"role": "system", "content": "You are an expert in designing pseudocode for Snowflake SQL query generation. Generate human-readable pseudocode, also give a table containing table names, column names, join types, and join conditions. DOnt give SQL query in pseudocode. Keep it clean and to the point."},
+        {"role": "system", "content": "You are an expert in designing pseudocode for Snowflake SQL query generation. Generate human-readable pseudocode, also give information regarding table names, column names, join types, and join conditions. Keep it clean and to the point."},
         {"role": "user", "content": prompt}
     ]
 
