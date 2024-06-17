@@ -69,13 +69,9 @@ def generate_pseudocode(conversation):
         {"role": "user", "content": prompt}
     ]
 
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completion.create(
         model="gpt-4",
         messages=full_prompt,
-        max_tokens=1500,
-        temperature=0.5,
-        n=1,
-        stop=None
     )
     return response.choices[0]['message']['content'].strip()
 
@@ -92,13 +88,9 @@ def generate_sql(pseudocode):
         {"role": "user", "content": prompt}
     ]
 
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completion.create(
         model="gpt-4",
         messages=full_prompt,
-        max_tokens=4000,
-        temperature=0.5,
-        n=1,
-        stop=None
     )
     return response.choices[0]['message']['content'].strip()
 
@@ -115,16 +107,13 @@ def handle_error(query, error):
     Conversation:
     {conversation}
     """
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completion.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. Also add 'Generated SQL Query:' term just before SQL query to identify, don't add any other identifier like 'sql' or '`' in response, apart from text 'Generated SQL Query:' and don't write anything after the query ends."},
             {"role": "user", "content": prompt}
         ],
-        max_tokens=4000,
-        temperature=0.5,
-        n=1,
-        stop=None
+
     )
     return response.choices[0]['message']['content'].strip()
 
@@ -155,13 +144,10 @@ def generate_chart_code(dataframe):
         {"role": "user", "content": prompt}
     ]
 
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completion.create(
         model="gpt-4",
         messages=full_prompt,
-        max_tokens=4000,
-        temperature=0.5,
-        n=1,
-        stop=None
+
     )
     return response.choices[0]['message']['content'].strip()
 
