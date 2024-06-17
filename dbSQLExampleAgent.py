@@ -104,7 +104,7 @@ def generate_sql(pseudocode):
 
 def handle_error(query, error):
     prompt = f"""
-    Given the following SQL, and the error from Snowflake, along with user conversation. Resolve this. Also add 'Generated SQL Query:' term just before SQL query to identify, don't add any other identifier like 'sql' or '`' in response
+    Given the following SQL, and the error from Snowflake. Resolve this. Also add 'Generated SQL Query:' term just before SQL query to identify, don't add any other identifier like 'sql' or '`' in response
 
     Error:
     {error}
@@ -112,8 +112,6 @@ def handle_error(query, error):
     Code:
     {query}
 
-    Conversation:
-    {conversation}
     """
     response = client.chat.completions.create(
         model="gpt-4o",
