@@ -30,7 +30,7 @@ SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
 SNOWFLAKE_ROLE = "Rudder"
 
 openai.api_key = st.secrets.credentials.api_key
-
+client = OpenAI(openai.api_key)
 def execute_query(query):
     try:
         conn = snowflake.connector.connect(
@@ -69,7 +69,7 @@ def generate_pseudocode(conversation):
         {"role": "user", "content": prompt}
     ]
 
-    response = openai.chat.completion.create(
+    response = client.chat.completion.create(
         model="gpt-4",
         messages=full_prompt,
     )
@@ -88,7 +88,7 @@ def generate_sql(pseudocode):
         {"role": "user", "content": prompt}
     ]
 
-    response = openai.chat.completion.create(
+    response = client.chat.completion.create(
         model="gpt-4",
         messages=full_prompt,
     )
@@ -107,7 +107,7 @@ def handle_error(query, error):
     Conversation:
     {conversation}
     """
-    response = openai.chat.completion.create(
+    response = client.chat.completion.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. Also add 'Generated SQL Query:' term just before SQL query to identify, don't add any other identifier like 'sql' or '`' in response, apart from text 'Generated SQL Query:' and don't write anything after the query ends."},
@@ -144,7 +144,7 @@ def generate_chart_code(dataframe):
         {"role": "user", "content": prompt}
     ]
 
-    response = openai.chat.completion.create(
+    response = client.chat.completion.create(
         model="gpt-4",
         messages=full_prompt,
 
