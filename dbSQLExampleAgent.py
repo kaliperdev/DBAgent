@@ -72,7 +72,7 @@ def generate_pseudocode(conversation):
     ]
 
     response = client.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4o",
         messages=full_prompt,
     )
     return response.choices[0]['message']['content'].strip()
@@ -91,7 +91,7 @@ def generate_sql(pseudocode):
     ]
 
     response = client.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4o",
         messages=full_prompt,
     )
     return response.choices[0]['message']['content'].strip()
@@ -110,7 +110,7 @@ def handle_error(query, error):
     {conversation}
     """
     response = client.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. Also add 'Generated SQL Query:' term just before SQL query to identify, don't add any other identifier like 'sql' or '`' in response, apart from text 'Generated SQL Query:' and don't write anything after the query ends."},
             {"role": "user", "content": prompt}
@@ -147,7 +147,7 @@ def generate_chart_code(dataframe):
     ]
 
     response = client.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4o",
         messages=full_prompt,
 
     )
