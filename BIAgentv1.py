@@ -91,7 +91,7 @@ def generate_sql(conversation):
         n=1,
         stop=None
     )
-    response.choices[0].message.content.strip()
+    return response.choices[0].message.content.strip()
 
 def handle_error(query, error):
     prompt = f"""
