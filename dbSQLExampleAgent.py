@@ -121,7 +121,7 @@ def handle_error(query, error):
         ],
 
     )
-    return response.choices[0].message.content.strip
+    return response.choices[0].message.content.strip()
 
 def extract_query_from_message(content):
     if "Generated SQL Query:" in content:
@@ -155,7 +155,7 @@ def generate_chart_code(dataframe):
         messages=full_prompt,
 
     )
-    return response.choices[0].message.content.strip
+    return response.choices[0].message.content.strip()
 
 def extract_code_from_response(response):
     # Use regex to extract code block between ```python and ```
