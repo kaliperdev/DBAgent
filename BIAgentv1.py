@@ -8,6 +8,8 @@ import tiktoken
 import re
 from plotly.subplots import make_subplots
 import plotly.graph_objs as go
+from openai import OpenAI
+
 
 
 # Ensure session state is initialized at the very beginning
