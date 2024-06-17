@@ -32,7 +32,7 @@ SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
 SNOWFLAKE_ROLE = "Rudder"
 
 openai_api_key = st.secrets.credentials.api_key
-client = OpenAI(openai_api_key)
+client = OpenAI(api_key = openai_api_key)
 def execute_query(query):
     try:
         conn = snowflake.connector.connect(
