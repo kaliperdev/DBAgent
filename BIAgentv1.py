@@ -25,8 +25,8 @@ SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
 SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
 SNOWFLAKE_ROLE = "Rudder"
 
-openai.api_key = st.secrets.credentials.api_key
-
+openai_api_key = st.secrets.credentials.api_key
+client = OpenAI(api_key = openai_api_key)
 def execute_query(query):
 
     try:
@@ -81,7 +81,7 @@ def generate_sql(conversation):
     # if token_count > 4096:  # Adjust based on model's token limit (e.g., 4096 for GPT-4)
     #     raise ValueError("Prompt is too long and exceeds the token limit for the model.")
     
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4o",
         messages=full_prompt,
         max_tokens=4000,
@@ -89,7 +89,7 @@ def generate_sql(conversation):
         n=1,
         stop=None
     )
-    return response.choices[0]['message']['content'].strip()
+    response.choices[0].message.content.strip()
 
 def handle_error(query, error):
     prompt = f"""
@@ -105,7 +105,7 @@ def handle_error(query, error):
     {conversation}
 
     """
-    response = openai.ChatCompletion.create(
+    response = client.chat.completion.create(
         model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response, apart from text 'Generated SQL Query:' and don't write anything after the query ends."},
@@ -116,7 +116,7 @@ def handle_error(query, error):
         n=1,
         stop=None
     )
-    return response.choices[0]['message']['content'].strip()
+    return response.choices[0].message.content.strip()
 
 def extract_query_from_message(content):
     if "Generated SQL Query:" in content:
@@ -145,7 +145,7 @@ def generate_chart_code(dataframe):
         {"role": "user", "content": prompt}
     ]
 
-    response = openai.ChatCompletion.create(
+    response = client.chat.completion.create(
         model="gpt-4o",
         messages=full_prompt,
         max_tokens=4000,
@@ -153,7 +153,7 @@ def generate_chart_code(dataframe):
         n=1,
         stop=None
     )
-    return response.choices[0]['message']['content'].strip()
+    return response.choices[0].message.content.strip()
 
 def extract_code_from_response(response):
     # Use regex to extract code block between ```python and ```
