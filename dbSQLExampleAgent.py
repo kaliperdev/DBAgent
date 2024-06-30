@@ -16,10 +16,11 @@ if 'messages' not in st.session_state:
 # Check and prompt for Snowflake credentials
 SNOWFLAKE_PASSWORD = st.secrets.credentials.sf_password
 SNOWFLAKE_USER = "DATAINTEGRITY_KALIPER"
-SNOWFLAKE_ACCOUNT = "zt30947.us-east-2.aws"
+#SNOWFLAKE_ACCOUNT = "zt30947.us-east-2.aws"
+SNOWFLAKE_ACCOUNT = "JSGKEBP.CN71497"
 SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
 SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
-SNOWFLAKE_ROLE = "Rudder"
+SNOWFLAKE_ROLE = "RUDDER"
 openai.api_key = st.secrets.credentials.api_key
 
 def execute_query(query):
