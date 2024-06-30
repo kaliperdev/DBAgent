@@ -178,19 +178,7 @@ if openai.api_key:
             
             result = execute_query(actual_sql_query)
             
-            if "SQL compilation error" in result:
-                st.error(f"SQL compilation error: {result}")
-                corrected_sql_query = handle_error(actual_sql_query, result)
-                st.session_state.messages.append({"role": "assistant", "content": corrected_sql_query})
-                corrected_sql_query_text = extract_query_from_message(corrected_sql_query)
-                result = execute_query(corrected_sql_query_text)
-                if "SQL compilation error" in result:
-                    st.error(f"Error executing corrected query: {result}")
-                else:
-                    st.write("### Corrected Query Result")
-                    st.write(result)
-                    st.session_state.messages.append({"role": "assistant", "content": corrected_sql_query_text})
-            else:
+            if isinstance(result, pd.DataFrame):
                 st.write("### Query Result")
                 st.write(result)
                 st.session_state.messages.append({"role": "assistant", "content": result})
@@ -212,7 +200,36 @@ if openai.api_key:
                         st.error("No figure found in the generated code.")
                 except Exception as e:
                     st.error(f"Error executing chart code: {e}")
-    
+            else:
+                st.error(f"SQL compilation error: {result}")
+                corrected_sql_query = handle_error(actual_sql_query, result)
+                st.session_state.messages.append({"role": "assistant", "content": corrected_sql_query})
+                corrected_sql_query_text = extract_query_from_message(corrected_sql_query)
+                result = execute_query(corrected_sql_query_text)
+                if isinstance(result, pd.DataFrame):
+                    st.write("### Corrected Query Result")
+                    st.write(result)
+                    st.session_state.messages.append({"role": "assistant", "content": corrected_sql_query_text})
+                    
+                    # Generate and display the chart
+                    chart_code_response = generate_chart_code(result)
+                    st.write("### Chart Code Response")
+                    chart_code = extract_code_from_response(chart_code_response)
+                    st.code(chart_code, language='python')
+                    
+                    try:
+                        # Define the local scope for exec to capture the figure
+                        local_scope = {}
+                        exec(chart_code, {'pd': pd, 'px': px, 'go': go, 'make_subplots': make_subplots, 'df': result}, local_scope)
+                        fig = local_scope.get('fig')
+                        if fig:
+                            st.plotly_chart(fig)
+                        else:
+                            st.error("No figure found in the generated code.")
+                    except Exception as e:
+                        st.error(f"Error executing chart code: {e}")
+                else:
+                    st.error(f"Error executing corrected query: {result}")
     # Display chat history
     st.write("### Chat History")
     for message in reversed(st.session_state.messages):
