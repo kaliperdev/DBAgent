@@ -65,7 +65,7 @@ def generate_sql(conversation):
     # if token_count > 4096:  # Adjust based on model's token limit (e.g., 4096 for GPT-4)
     #     raise ValueError("Prompt is too long and exceeds the token limit for the model.")
 
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-4o",
         messages=full_prompt,
         max_tokens=4000,
@@ -84,7 +84,7 @@ def handle_error(query, error):
     Conversation:
     {conversation}
     """
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries. Use Snowflake processing standards. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response, apart from text 'Generated SQL Query:' and don't write anything after the query ends."},
@@ -120,7 +120,7 @@ def generate_chart_code(dataframe):
         {"role": "system", "content": "You are an expert in data visualization using Plotly. Brand colour is purple, use majorly white and purple shades. give proper visible dark legends, title, and data axis for white background. Make a 3D looking chart in 2D, that looks professional and super appealing. use valid hex color code as color id in code. Start python code with string '```python' and end with '```'"},
         {"role": "user", "content": prompt}
     ]
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-4o",
         messages=full_prompt,
         max_tokens=4000,
