@@ -8,9 +8,11 @@ import tiktoken
 import re
 from plotly.subplots import make_subplots
 import plotly.graph_objs as go
+
 # Ensure session state is initialized at the very beginning
 if 'messages' not in st.session_state:
     st.session_state.messages = []
+
 # Check and prompt for Snowflake credentials
 SNOWFLAKE_PASSWORD = st.secrets.credentials.sf_password
 SNOWFLAKE_USER = "DATAINTEGRITY_KALIPER"
@@ -19,6 +21,7 @@ SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
 SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
 SNOWFLAKE_ROLE = "Rudder"
 openai.api_key = st.secrets.credentials.api_key
+
 def execute_query(query):
     try:
         conn = snowflake.connector.connect(
@@ -37,6 +40,7 @@ def execute_query(query):
         return result
     except Exception as e:
         return str(e)
+
 def generate_sql(conversation):
     prompt = f"""
     You are an expert SQL query writer. Given the following schema and examples, generate a SQL query for the given question. Be mindful of the following: 1. The query should only contain tables and columns combinations as per the schema. For help in generating the query, refer to the examples. If there is no schema passed. Display message that no schema available for this query.
@@ -74,6 +78,7 @@ def generate_sql(conversation):
         stop=None
     )
     return response.choices[0].message.content.strip()
+
 def handle_error(query, error):
     prompt = f"""
     Given the following SQL, and the error from Snowflake, along with user conversation. Resolve this. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response
@@ -96,6 +101,7 @@ def handle_error(query, error):
         stop=None
     )
     return response.choices[0].message.content.strip()
+
 def extract_query_from_message(content):
     if "Generated SQL Query:" in content:
         query_part = content.split("Generated SQL Query:", 1)[1].strip()
@@ -109,32 +115,40 @@ def extract_query_from_message(content):
         # Case 1: Plain query after the "Generated SQL Query:" string
         return query_part
     return content
+
 def generate_chart_code(dataframe):
-    prompt = f"""
-    You are an expert in data visualization. Given a pandas DataFrame with the following columns: {', '.join(str({dataframe.columns}))}, generate the best charting code using Plotly. The code should produce an informative and visually appealing chart.
-    
-    Data to be plotted:
-    {dataframe}
-    """
-    full_prompt = [
-        {"role": "system", "content": "You are an expert in data visualization using Plotly. Brand colour is purple, use majorly white and purple shades. give proper visible dark legends, title, and data axis for white background. Make a 3D looking chart in 2D, that looks professional and super appealing. use valid hex color code as color id in code. Start python code with string '```python' and end with '```'"},
-        {"role": "user", "content": prompt}
-    ]
-    response = openai.chat.completions.create(
-        model="gpt-4o",
-        messages=full_prompt,
-        max_tokens=4000,
-        temperature=0.5,
-        n=1,
-        stop=None
-    )
-    return response.choices[0].message.content.strip()
+    if isinstance(dataframe, pd.DataFrame):
+        columns_list = ', '.join(dataframe.columns)
+        dataframe_str = dataframe.to_string()
+        prompt = f"""
+        You are an expert in data visualization. Given a pandas DataFrame with the following columns: {columns_list}, generate the best charting code using Plotly. The code should produce an informative and visually appealing chart.
+
+        Data to be plotted:
+        {dataframe_str}
+        """
+        full_prompt = [
+            {"role": "system", "content": "You are an expert in data visualization using Plotly. Brand colour is purple, use majorly white and purple shades. give proper visible dark legends, title, and data axis for white background. Make a 3D looking chart in 2D, that looks professional and super appealing. use valid hex color code as color id in code. Start python code with string '```python' and end with '```'"},
+            {"role": "user", "content": prompt}
+        ]
+        response = openai.chat.completions.create(
+            model="gpt-4o",
+            messages=full_prompt,
+            max_tokens=4000,
+            temperature=0.5,
+            n=1,
+            stop=None
+        )
+        return response.choices[0].message.content.strip()
+    else:
+        raise ValueError("The input is not a valid pandas DataFrame")
+
 def extract_code_from_response(response):
     # Use regex to extract code block between ```python and ```
     code_block = re.search(r'```python(.*?)```', response, re.DOTALL)
     if code_block:
         return code_block.group(1).strip()
     return ""
+
 if openai.api_key:
     # Load schema CSV
     schema_file_path = 'Schema.csv'
@@ -150,6 +164,7 @@ if openai.api_key:
     examples = ""
     for _, row in examples_df.iterrows():
         examples += f"Question: {row['Question']}\nQuery: {row['Query']}\n\n"
+    
     st.title("BI Automation")
     # Streamlit interface
     user_question = st.text_input("Define your Marketing Analytics Requirements:")
@@ -177,14 +192,15 @@ if openai.api_key:
                     st.session_state.messages.append({"role": "assistant", "content": corrected_sql_query_text})
             else:
                 st.write("### Query Result")
-                #st.write(result)
+                st.write(result)
                 st.session_state.messages.append({"role": "assistant", "content": result})
+                
                 # Generate and display the chart
                 chart_code_response = generate_chart_code(result)
                 st.write("### Chart Code Response")
-                # st.write(chart_code_response)
                 chart_code = extract_code_from_response(chart_code_response)
-                #st.code(chart_code, language='python')
+                st.code(chart_code, language='python')
+                
                 try:
                     # Define the local scope for exec to capture the figure
                     local_scope = {}
@@ -196,18 +212,19 @@ if openai.api_key:
                         st.error("No figure found in the generated code.")
                 except Exception as e:
                     st.error(f"Error executing chart code: {e}")
+    
     # Display chat history
     st.write("### Chat History")
     for message in reversed(st.session_state.messages):
         if message['role'] == 'user':
             st.write(f"**User:** {message['content']}")
         else:
-            #st.write(f"**Assistant:** {message['content']}")
+            st.write(f"**Assistant:**")
             try:
                 fig = px.line(result)  # Example chart, customize based on your data
                 st.plotly_chart(fig)
             except:
-                print("Something is Suspicious")
+                st.write("Something is suspicious")
             st.code(message['content'], language='sql')
             st.write(result)
 else:
