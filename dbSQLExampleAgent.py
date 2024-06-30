@@ -111,7 +111,7 @@ def extract_query_from_message(content):
     return content
 def generate_chart_code(dataframe):
     prompt = f"""
-    You are an expert in data visualization. Given a pandas DataFrame with the following columns: {', '.join(dataframe.columns)}, generate the best charting code using Plotly. The code should produce an informative and visually appealing chart.
+    You are an expert in data visualization. Given a pandas DataFrame with the following columns: {', '.join(str(dataframe.columns))}, generate the best charting code using Plotly. The code should produce an informative and visually appealing chart.
     
     Data to be plotted:
     {dataframe}
