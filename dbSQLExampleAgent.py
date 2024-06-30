@@ -19,6 +19,7 @@ print(st.secrets.credentials.sf_password)
 SNOWFLAKE_USER = "DATAINTEGRITY_KALIPER"
 #SNOWFLAKE_ACCOUNT = "zt30947.us-east-2.aws.snowflakecomputing.com"
 SNOWFLAKE_ACCOUNT = "jsgkebp-cn71497"
+SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
 SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
 SNOWFLAKE_ROLE = "RUDDER"
 openai.api_key = st.secrets.credentials.api_key
@@ -29,8 +30,9 @@ def execute_query(query):
             user=SNOWFLAKE_USER,
             password=SNOWFLAKE_PASSWORD,
             account=SNOWFLAKE_ACCOUNT,
+            database = SNOWFLAKE_DATABASE,
             warehouse=SNOWFLAKE_WAREHOUSE,
-            #role=SNOWFLAKE_ROLE
+            role=SNOWFLAKE_ROLE,
         )
         cursor = conn.cursor()
         cursor.execute(query)
