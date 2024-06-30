@@ -217,7 +217,7 @@ if openai.api_key:
                     chart_code_response = generate_chart_code(result)
                     st.write("### Chart Code Response")
                     chart_code = extract_code_from_response(chart_code_response)
-                    st.code(chart_code, language='python')
+                    #st.code(chart_code, language='python')
                     
                     try:
                         # Define the local scope for exec to capture the figure
