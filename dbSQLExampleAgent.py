@@ -30,7 +30,6 @@ def execute_query(query):
             password=SNOWFLAKE_PASSWORD,
             account=SNOWFLAKE_ACCOUNT,
             warehouse=SNOWFLAKE_WAREHOUSE,
-            database=SNOWFLAKE_DATABASE,
             #role=SNOWFLAKE_ROLE
         )
         cursor = conn.cursor()
