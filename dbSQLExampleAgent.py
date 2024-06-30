@@ -260,4 +260,4 @@ if openai.api_key:
             st.code(message['content'], language='sql')
             st.write(result)
 else:
-    st.warning(f"Please enter your OpenAI API key to proceed. {st.secrets.credentials.sf_password}")
+    st.warning(f"Please enter your OpenAI API key to proceed. {st.secrets.credentials.api_key}")
