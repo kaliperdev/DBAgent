@@ -66,7 +66,6 @@ def generate_sql(conversation):
     #     raise ValueError("Prompt is too long and exceeds the token limit for the model.")
 
     response = openai.ChatCompletion.create(
-        model="gpt-40",
         model="gpt-4o",
         messages=full_prompt,
         max_tokens=4000,
