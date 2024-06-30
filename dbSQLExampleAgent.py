@@ -166,7 +166,7 @@ def extract_code_from_response(response):
     return ""
 
 
-if openai.api_key:
+if st.secrets.credentials.api_key:
     # Load schema CSV
     schema_file_path = 'Schema.csv'
     schema_df = pd.read_csv(schema_file_path)
