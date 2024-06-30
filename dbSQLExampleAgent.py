@@ -243,7 +243,7 @@ if openai.api_key:
                 fig = px.line(result)  # Example chart, customize based on your data
                 st.plotly_chart(fig)
             except:
-                st.write("Something is suspicious")
+                st.write("...")
             st.code(message['content'], language='sql')
             st.write(result)
 else:
