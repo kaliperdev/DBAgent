@@ -73,7 +73,7 @@ def generate_sql(conversation):
         n=1,
         stop=None
     )
-    return response.choices[0]['message']['content'].strip()
+    return response.choices[0].message.content.strip()
 def handle_error(query, error):
     prompt = f"""
     Given the following SQL, and the error from Snowflake, along with user conversation. Resolve this. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response
@@ -95,7 +95,7 @@ def handle_error(query, error):
         n=1,
         stop=None
     )
-    return response.choices[0]['message']['content'].strip()
+    return response.choices[0].message.content.strip()
 def extract_query_from_message(content):
     if "Generated SQL Query:" in content:
         query_part = content.split("Generated SQL Query:", 1)[1].strip()
@@ -128,7 +128,7 @@ def generate_chart_code(dataframe):
         n=1,
         stop=None
     )
-    return response.choices[0]['message']['content'].strip()
+    return response.choices[0].message.content.strip()
 def extract_code_from_response(response):
     # Use regex to extract code block between ```python and ```
     code_block = re.search(r'```python(.*?)```', response, re.DOTALL)
