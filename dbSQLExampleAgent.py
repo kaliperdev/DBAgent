@@ -20,7 +20,7 @@ SNOWFLAKE_USER = "DATAINTEGRITY_KALIPER"
 #SNOWFLAKE_ACCOUNT = "zt30947.us-east-2.aws.snowflakecomputing.com"
 SNOWFLAKE_ACCOUNT = "jsgkebp-cn71497"
 SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
-SNOWFLAKE_ROLE = "PUBLIC"
+SNOWFLAKE_ROLE = "RUDDER"
 openai.api_key = st.secrets.credentials.api_key
 
 def execute_query(query):
