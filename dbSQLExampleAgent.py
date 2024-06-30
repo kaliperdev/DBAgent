@@ -13,7 +13,7 @@ if 'messages' not in st.session_state:
     st.session_state.messages = []
 # Check and prompt for Snowflake credentials
 SNOWFLAKE_PASSWORD = st.secrets.credentials.sf_password
-SNOWFLAKE_USER = "Rahul"
+SNOWFLAKE_USER = "DATAINTEGRITY_KALIPER"
 SNOWFLAKE_ACCOUNT = "zt30947.us-east-2.aws"
 SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
 SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
