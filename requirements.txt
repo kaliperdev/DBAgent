@@ -5,3 +5,4 @@ openai>0.28.0
 snowflake-connector-python
 plotly
 tiktoken
+pyairtable
