@@ -17,9 +17,6 @@ if 'messages' not in st.session_state:
 SNOWFLAKE_PASSWORD = st.secrets.credentials.sf_password
 print(st.secrets.credentials.sf_password)
 #Put user and account in ST environment
-SNOWFLAKE_USER = "DATAINTEGRITY_KALIPER"
-#SNOWFLAKE_ACCOUNT = "zt30947.us-east-2.aws.snowflakecomputing.com"
-SNOWFLAKE_ACCOUNT = "jsgkebp-cn71497"
 SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
 SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
 SNOWFLAKE_ROLE = "RUDDER"
