@@ -13,10 +13,10 @@ import plotly.graph_objs as go
 if 'messages' not in st.session_state:
     st.session_state.messages = []
 
-# Airtable setup
-AIRTABLE_API_KEY = st.secrets.credentials.airtable_api_key
-AIRTABLE_BASE_ID = "app4ZQ9jav2XzNIv9/tblOXniWlqaacof5G"
-AIRTABLE_TABLE_NAME = "SessionGPT"
+# # Airtable setup
+# AIRTABLE_API_KEY = st.secrets.credentials.airtable_api_key
+# AIRTABLE_BASE_ID = "app4ZQ9jav2XzNIv9/tblOXniWlqaacof5G"
+# AIRTABLE_TABLE_NAME = "SessionGPT"
 
 # Check and prompt for Snowflake credentials
 SNOWFLAKE_PASSWORD = st.secrets.credentials.sf_password
@@ -27,64 +27,64 @@ SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
 SNOWFLAKE_ROLE = "RUDDER"
 openai.api_key = st.secrets.credentials.api_key
 
-def get_airtable_records(session_id):
-    url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_NAME}"
-    headers = {"Authorization": f"Bearer {AIRTABLE_API_KEY}"}
-    params = {"filterByFormula": f"{{SessionID}}='{session_id}'"}
-    response = requests.get(url, headers=headers, params=params)
-    return response.json().get('records', [])
+# def get_airtable_records(session_id):
+#     url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_NAME}"
+#     headers = {"Authorization": f"Bearer {AIRTABLE_API_KEY}"}
+#     params = {"filterByFormula": f"{{SessionID}}='{session_id}'"}
+#     response = requests.get(url, headers=headers, params=params)
+#     return response.json().get('records', [])
 
-def save_airtable_record(session_id, messages):
-    url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_NAME}"
-    headers = {
-        "Authorization": f"Bearer {AIRTABLE_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "fields": {
-            "SessionID": session_id,
-            "Messages": str(messages)
-        }
-    }
-    response = requests.post(url, headers=headers, json=data)
-    return response.json()
+# def save_airtable_record(session_id, messages):
+#     url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_NAME}"
+#     headers = {
+#         "Authorization": f"Bearer {AIRTABLE_API_KEY}",
+#         "Content-Type": "application/json"
+#     }
+#     data = {
+#         "fields": {
+#             "SessionID": session_id,
+#             "Messages": str(messages)
+#         }
+#     }
+#     response = requests.post(url, headers=headers, json=data)
+#     return response.json()
 
-def update_airtable_record(record_id, messages):
-    url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_NAME}/{record_id}"
-    headers = {
-        "Authorization": f"Bearer {AIRTABLE_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "fields": {
-            "Messages": str(messages)
-        }
-    }
-    response = requests.patch(url, headers=headers, json=data)
-    return response.json()
+# def update_airtable_record(record_id, messages):
+#     url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_NAME}/{record_id}"
+#     headers = {
+#         "Authorization": f"Bearer {AIRTABLE_API_KEY}",
+#         "Content-Type": "application/json"
+#     }
+#     data = {
+#         "fields": {
+#             "Messages": str(messages)
+#         }
+#     }
+#     response = requests.patch(url, headers=headers, json=data)
+#     return response.json()
 
-def load_conversation(session_id):
-    records = get_airtable_records(session_id)
-    if records:
-        st.session_state.messages = eval(records[0]['fields']['Messages'])
-        return records[0]['id']
-    return None
+# def load_conversation(session_id):
+#     records = get_airtable_records(session_id)
+#     if records:
+#         st.session_state.messages = eval(records[0]['fields']['Messages'])
+#         return records[0]['id']
+#     return None
 
-def save_conversation(session_id):
-    record_id = load_conversation(session_id)
-    if record_id:
-        update_airtable_record(record_id, st.session_state.messages)
-    else:
-        save_airtable_record(session_id, st.session_state.messages)
+# def save_conversation(session_id):
+#     record_id = load_conversation(session_id)
+#     if record_id:
+#         update_airtable_record(record_id, st.session_state.messages)
+#     else:
+#         save_airtable_record(session_id, st.session_state.messages)
 
-# Get or generate a session ID
-if 'session_id' not in st.session_state:
-    st.session_state.session_id = st.experimental_get_query_params().get('session_id', [str(uuid.uuid4())])[0]
+# # Get or generate a session ID
+# if 'session_id' not in st.session_state:
+#     st.session_state.session_id = st.experimental_get_query_params().get('session_id', [str(uuid.uuid4())])[0]
 
-session_id = st.session_state.session_id
+# session_id = st.session_state.session_id
 
-# Load previous conversation if exists
-load_conversation(session_id)
+# # Load previous conversation if exists
+# load_conversation(session_id)
 
 def execute_query(query):
     try:
@@ -312,4 +312,4 @@ else:
     st.warning(f"Please enter your OpenAI API key to proceed.")
 
 # Save conversation to Airtable
-save_conversation(session_id)
+# save_conversation(session_id)
