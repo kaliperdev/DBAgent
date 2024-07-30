@@ -8,84 +8,21 @@ import tiktoken
 import re
 from plotly.subplots import make_subplots
 import plotly.graph_objs as go
-
 # Ensure session state is initialized at the very beginning
 if 'messages' not in st.session_state:
     st.session_state.messages = []
-
-# # Airtable setup
-# AIRTABLE_API_KEY = st.secrets.credentials.airtable_api_key
-# AIRTABLE_BASE_ID = "app4ZQ9jav2XzNIv9/tblOXniWlqaacof5G"
-# AIRTABLE_TABLE_NAME = "SessionGPT"
-
 # Check and prompt for Snowflake credentials
 SNOWFLAKE_PASSWORD = st.secrets.credentials.sf_password
 print(st.secrets.credentials.sf_password)
 #Put user and account in ST environment
+
+SNOWFLAKE_USER = "DATAINTEGRITY_KALIPER"
+#SNOWFLAKE_ACCOUNT = "zt30947.us-east-2.aws.snowflakecomputing.com"
+SNOWFLAKE_ACCOUNT = "jsgkebp-cn71497"
 SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
 SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
 SNOWFLAKE_ROLE = "RUDDER"
 openai.api_key = st.secrets.credentials.api_key
-
-# def get_airtable_records(session_id):
-#     url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_NAME}"
-#     headers = {"Authorization": f"Bearer {AIRTABLE_API_KEY}"}
-#     params = {"filterByFormula": f"{{SessionID}}='{session_id}'"}
-#     response = requests.get(url, headers=headers, params=params)
-#     return response.json().get('records', [])
-
-# def save_airtable_record(session_id, messages):
-#     url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_NAME}"
-#     headers = {
-#         "Authorization": f"Bearer {AIRTABLE_API_KEY}",
-#         "Content-Type": "application/json"
-#     }
-#     data = {
-#         "fields": {
-#             "SessionID": session_id,
-#             "Messages": str(messages)
-#         }
-#     }
-#     response = requests.post(url, headers=headers, json=data)
-#     return response.json()
-
-# def update_airtable_record(record_id, messages):
-#     url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_NAME}/{record_id}"
-#     headers = {
-#         "Authorization": f"Bearer {AIRTABLE_API_KEY}",
-#         "Content-Type": "application/json"
-#     }
-#     data = {
-#         "fields": {
-#             "Messages": str(messages)
-#         }
-#     }
-#     response = requests.patch(url, headers=headers, json=data)
-#     return response.json()
-
-# def load_conversation(session_id):
-#     records = get_airtable_records(session_id)
-#     if records:
-#         st.session_state.messages = eval(records[0]['fields']['Messages'])
-#         return records[0]['id']
-#     return None
-
-# def save_conversation(session_id):
-#     record_id = load_conversation(session_id)
-#     if record_id:
-#         update_airtable_record(record_id, st.session_state.messages)
-#     else:
-#         save_airtable_record(session_id, st.session_state.messages)
-
-# # Get or generate a session ID
-# if 'session_id' not in st.session_state:
-#     st.session_state.session_id = st.experimental_get_query_params().get('session_id', [str(uuid.uuid4())])[0]
-
-# session_id = st.session_state.session_id
-
-# # Load previous conversation if exists
-# load_conversation(session_id)
-
 def execute_query(query):
     try:
         conn = snowflake.connector.connect(
@@ -104,7 +41,6 @@ def execute_query(query):
         return result
     except Exception as e:
         return str(e)
-
 def generate_sql(conversation):
     prompt = f"""
     You are an expert SQL query writer. Given the following schema and examples, generate a SQL query for the given question. Be mindful of the following: 1. The query should only contain tables and columns combinations as per the schema. For help in generating the query, refer to the examples. If there is no schema passed. Display message that no schema available for this query.
@@ -132,7 +68,6 @@ def generate_sql(conversation):
     # # Ensure token count is within the model's limit
     # if token_count > 4096:  # Adjust based on model's token limit (e.g., 4096 for GPT-4)
     #     raise ValueError("Prompt is too long and exceeds the token limit for the model.")
-
     response = openai.chat.completions.create(
         model="gpt-4o",
         messages=full_prompt,
@@ -142,7 +77,6 @@ def generate_sql(conversation):
         stop=None
     )
     return response.choices[0].message.content.strip()
-
 def handle_error(query, error):
     prompt = f"""
     Given the following SQL, and the error from Snowflake, along with user conversation. Resolve this. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response
@@ -165,7 +99,6 @@ def handle_error(query, error):
         stop=None
     )
     return response.choices[0].message.content.strip()
-
 def extract_query_from_message(content):
     if "Generated SQL Query:" in content:
         query_part = content.split("Generated SQL Query:", 1)[1].strip()
@@ -179,14 +112,12 @@ def extract_query_from_message(content):
         # Case 1: Plain query after the "Generated SQL Query:" string
         return query_part
     return content
-
 def generate_chart_code(dataframe):
     if isinstance(dataframe, pd.DataFrame):
         columns_list = ', '.join(dataframe.columns)
         dataframe_str = dataframe.to_string()
         prompt = f"""
         You are an expert in data visualization. Given a pandas DataFrame with the following columns: {columns_list}, generate the best charting code using Plotly. The code should produce an informative and visually appealing chart.
-
         Data to be plotted:
         {dataframe_str}
         """
@@ -205,14 +136,12 @@ def generate_chart_code(dataframe):
         return response.choices[0].message.content.strip()
     else:
         raise ValueError("The input is not a valid pandas DataFrame")
-
 def extract_code_from_response(response):
     # Use regex to extract code block between ```python and ```
     code_block = re.search(r'```python(.*?)```', response, re.DOTALL)
     if code_block:
         return code_block.group(1).strip()
     return ""
-
 if openai.api_key:
     # Load schema CSV
     schema_file_path = 'Schema.csv'
@@ -310,6 +239,3 @@ if openai.api_key:
             st.write(result)
 else:
     st.warning(f"Please enter your OpenAI API key to proceed.")
-
-# Save conversation to Airtable
-# save_conversation(session_id)
