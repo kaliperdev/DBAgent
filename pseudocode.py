@@ -25,8 +25,8 @@ def generate_pseudocode(conversation):
             {"role": "system", "content": "You are a Query Expert who generates step-wise instructions for SQL generation. Keep it short and accurate. Dont overload the response with SQL Query"},
             {"role": "user", "content": prompt}
         ],
-        max_tokens=4000,
-        temperature=0.5
+        max_tokens=2000,
+        temperature=0.1
     )
     return response.choices[0].message.content.strip()
 
