@@ -52,9 +52,9 @@ if openai.api_key:
     examples_file_path = 'Examples.csv'
     examples_df = pd.read_csv(examples_file_path)
 
-    # Prepare schema and examples information
-    schema_info = clean_up_schema(schema_df)
-    examples = clean_up_examples(examples_df)
+    # # Prepare schema and examples information
+    # schema_info = clean_up_schema(schema_df)
+    # examples = clean_up_examples(examples_df)
 
     st.title("Step-wise Pseudocode Generator")
 
