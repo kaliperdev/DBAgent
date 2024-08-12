@@ -52,6 +52,14 @@ if openai.api_key:
     examples_file_path = 'Examples.csv'
     examples_df = pd.read_csv(examples_file_path)
 
+    schema_info = ""
+    for _, row in schema_df.iterrows():
+        schema_info += f"Table: {row['Table Name']}\nColumn: {row['Column Name']}\nDescription: {row['Column Description']}\n\n"
+    # Prepare examples
+    examples = ""
+    for _, row in examples_df.iterrows():
+        examples += f"Question: {row['Question']}\nQuery: {row['Query']}\n\n"
+
     # # Prepare schema and examples information
     # schema_info = clean_up_schema(schema_df)
     # examples = clean_up_examples(examples_df)
