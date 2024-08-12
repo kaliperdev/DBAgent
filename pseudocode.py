@@ -60,25 +60,9 @@ if openai.api_key:
             st.session_state.messages.append({"role": "user", "content": user_question})
             st.session_state.messages.append({"role": "assistant", "content": pseudocode})
             
-            # Display pseudocode and ask for validation
+            # Display pseudocode
             st.write("### Generated Step-wise Pseudocode")
             st.code(pseudocode, language='plaintext')
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("Approve"):
-                    st.success("Pseudocode approved successfully.")
-            with col2:
-                if st.button("Reject"):
-                    st.session_state.messages.append({"role": "user", "content": "I need changes in the pseudocode."})
-                    user_instructions = st.text_area("Please provide further instructions to refine the pseudocode:")
-                    if st.button("Submit Instructions"):
-                        st.session_state.messages.append({"role": "user", "content": user_instructions})
-                        # Regenerate pseudocode based on user instructions
-                        revised_pseudocode = generate_pseudocode(conversation + f"\nUser: {user_instructions}")
-                        st.session_state.messages.append({"role": "assistant", "content": revised_pseudocode})
-                        st.write("### Revised Step-wise Pseudocode")
-                        st.code(revised_pseudocode, language='plaintext')
                     
     # Display chat history
     st.write("### Chat History")
