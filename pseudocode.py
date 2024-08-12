@@ -28,7 +28,7 @@ def generate_pseudocode(conversation):
         max_tokens=1000,
         temperature=0.5
     )
-    return response.choices[0].message["content"].strip()
+    return response.choices[0].message.content.strip()
 
 def clean_up_schema(schema_df):
     # Example function to clean up schema data if needed
