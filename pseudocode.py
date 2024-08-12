@@ -25,7 +25,7 @@ def generate_pseudocode(conversation):
             {"role": "system", "content": "You are a Pseudocode Expert who generates step-wise pseudocode for SQL generation."},
             {"role": "user", "content": prompt}
         ],
-        max_tokens=1000,
+        max_tokens=4000,
         temperature=0.5
     )
     return response.choices[0].message.content.strip()
