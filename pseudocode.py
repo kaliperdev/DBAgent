@@ -20,7 +20,7 @@ def generate_pseudocode(conversation):
     {conversation}
     """
     response = openai.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are a Pseudocode Expert who generates step-wise pseudocode for SQL generation."},
             {"role": "user", "content": prompt}
