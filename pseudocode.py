@@ -22,7 +22,7 @@ def generate_pseudocode(conversation):
     response = openai.chat.completions.create(
         model="gpt-4o",
         messages=[
-            {"role": "system", "content": "You are a Query Expert who generates step-wise instructions for SQL generation."},
+            {"role": "system", "content": "You are a Query Expert who generates step-wise instructions for SQL generation. Keep it short and accurate. Dont overload the response with SQL Query"},
             {"role": "user", "content": prompt}
         ],
         max_tokens=4000,
