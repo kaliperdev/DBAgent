@@ -30,19 +30,6 @@ def generate_pseudocode(conversation):
     )
     return response.choices[0].message.content.strip()
 
-def clean_up_schema(schema_df):
-    # Example function to clean up schema data if needed
-    schema_info = ""
-    for _, row in schema_df.iterrows():
-        schema_info += f"Table: {row['Table Name']}\nColumn: {row['Column Name']}\nDescription: {row['Column Description']}\n\n"
-    return schema_info
-
-def clean_up_examples(examples_df):
-    # Example function to clean up example data if needed
-    examples = ""
-    for _, row in examples_df.iterrows():
-        examples += f"Question: {row['Question']}\nPseudocode: {row['Pseudocode']}\n\n"
-    return examples
 
 if openai.api_key:
     # Load schema CSV
@@ -52,9 +39,15 @@ if openai.api_key:
     examples_file_path = 'Examples.csv'
     examples_df = pd.read_csv(examples_file_path)
 
-    # Prepare schema and examples information
-    schema_info = clean_up_schema(schema_df)
-    examples = clean_up_examples(examples_df)
+    # Prepare schema information
+    schema_info = ""
+    for _, row in schema_df.iterrows():
+        schema_info += f"Table: {row['Table Name']}\nColumn: {row['Column Name']}\nDescription: {row['Column Description']}\n\n"
+    # Prepare examples
+    examples = ""
+    for _, row in examples_df.iterrows():
+        examples += f"Question: {row['Question']}\nQuery: {row['Query']}\n\n"
+
 
     st.title("Step-wise Pseudocode Generator")
 
