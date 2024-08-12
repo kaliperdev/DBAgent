@@ -11,7 +11,7 @@ openai.api_key = st.secrets.credentials.api_key
 
 def generate_pseudocode(conversation):
     prompt = f"""
-    You are an expert at generating step-wise pseudocode for SQL generation. Given the following schema and examples, generate pseudocode for the given question in steps. Each step should clearly define actions like selecting columns, specifying table names, applying filters, and joining tables. The pseudocode should be formatted so that it can later be used to generate SQL queries.
+    You are an expert at generating step-wise pseudocode for SQL generation. Given the following schema and examples, generate human-readable pseudocode for the given question in steps. Each step should clearly define actions like selecting columns, specifying table names, applying filters, and joining tables. The pseudocode should be formatted so that it can later be used to generate SQL queries.
     Schema:
     {schema_info}
     Examples:
@@ -20,7 +20,7 @@ def generate_pseudocode(conversation):
     {conversation}
     """
     response = openai.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4",
         messages=[
             {"role": "system", "content": "You are a Pseudocode Expert who generates step-wise pseudocode for SQL generation."},
             {"role": "user", "content": prompt}
@@ -28,7 +28,7 @@ def generate_pseudocode(conversation):
         max_tokens=4000,
         temperature=0.5
     )
-    return response.choices[0].message.content.strip()
+    return response.choices[0].message['content'].strip()
 
 def clean_up_schema(schema_df):
     # Example function to clean up schema data if needed
@@ -52,17 +52,9 @@ if openai.api_key:
     examples_file_path = 'Examples.csv'
     examples_df = pd.read_csv(examples_file_path)
 
-    schema_info = ""
-    for _, row in schema_df.iterrows():
-        schema_info += f"Table: {row['Table Name']}\nColumn: {row['Column Name']}\nDescription: {row['Column Description']}\n\n"
-    # Prepare examples
-    examples = ""
-    for _, row in examples_df.iterrows():
-        examples += f"Question: {row['Question']}\nQuery: {row['Query']}\n\n"
-
-    # # Prepare schema and examples information
-    # schema_info = clean_up_schema(schema_df)
-    # examples = clean_up_examples(examples_df)
+    # Prepare schema and examples information
+    schema_info = clean_up_schema(schema_df)
+    examples = clean_up_examples(examples_df)
 
     st.title("Step-wise Pseudocode Generator")
 
@@ -79,19 +71,21 @@ if openai.api_key:
             st.write("### Generated Step-wise Pseudocode")
             st.code(pseudocode, language='plaintext')
             
-            approval = st.radio("Do you approve the pseudocode?", ("Approve", "Disapprove"))
-            if approval == "Approve":
-                st.success("Thanks for the approval")
-            else:
-                st.warning("Please provide instructions to edit the pseudocode")
-                user_instructions = st.text_area("Your instructions:")
-                if st.button("Submit Instructions"):
-                    st.session_state.messages.append({"role": "user", "content": user_instructions})
-                    # Regenerate pseudocode based on user instructions
-                    revised_pseudocode = generate_pseudocode(conversation + f"\nUser: {user_instructions}")
-                    st.session_state.messages.append({"role": "assistant", "content": revised_pseudocode})
-                    st.write("### Revised Step-wise Pseudocode")
-                    st.code(revised_pseudocode, language='plaintext')
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("Approve"):
+                    st.success("Pseudocode approved successfully.")
+            with col2:
+                if st.button("Reject"):
+                    st.session_state.messages.append({"role": "user", "content": "I need changes in the pseudocode."})
+                    user_instructions = st.text_area("Please provide further instructions to refine the pseudocode:")
+                    if st.button("Submit Instructions"):
+                        st.session_state.messages.append({"role": "user", "content": user_instructions})
+                        # Regenerate pseudocode based on user instructions
+                        revised_pseudocode = generate_pseudocode(conversation + f"\nUser: {user_instructions}")
+                        st.session_state.messages.append({"role": "assistant", "content": revised_pseudocode})
+                        st.write("### Revised Step-wise Pseudocode")
+                        st.code(revised_pseudocode, language='plaintext')
                     
     # Display chat history
     st.write("### Chat History")
