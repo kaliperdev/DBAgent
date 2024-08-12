@@ -11,7 +11,7 @@ openai.api_key = st.secrets.credentials.api_key
 
 def generate_pseudocode(conversation):
     prompt = f"""
-    You are an expert at generating step-wise pseudocode for SQL generation. Given the following schema and examples, generate human-readable pseudocode for the given question in steps. Each step should clearly define actions like selecting columns, specifying table names, applying filters, and joining tables. The pseudocode should be formatted so that it can later be used to generate SQL queries.
+    You are an expert at generating step-wise pseudocode for SQL generation. Given the following schema and examples, generate human-readable pseudocode for the given question in steps. Each step should clearly define actions like selecting columns, specifying table names, applying filters, and joining tables.
     Schema:
     {schema_info}
     Examples:
