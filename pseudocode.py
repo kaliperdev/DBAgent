@@ -11,7 +11,7 @@ openai.api_key = st.secrets.credentials.api_key
 
 def generate_pseudocode(conversation):
     prompt = f"""
-    You are an expert at generating step-wise pseudocode for SQL generation. Given the following schema and examples, generate human-readable pseudocode for the given question in steps. Each step should clearly define actions like selecting columns, specifying table names, applying filters, and joining tables.
+    You are an expert at generating step-wise instructions for SQL generation. Given the following schema and examples, generate human-readable pseudocode for the given question in steps. Each step should clearly define actions like selecting columns, specifying table names, applying filters, and joining tables.
     Schema:
     {schema_info}
     Examples:
@@ -22,7 +22,7 @@ def generate_pseudocode(conversation):
     response = openai.chat.completions.create(
         model="gpt-4o",
         messages=[
-            {"role": "system", "content": "You are a Pseudocode Expert who generates step-wise pseudocode for SQL generation."},
+            {"role": "system", "content": "You are a Query Expert who generates step-wise instructions for SQL generation."},
             {"role": "user", "content": prompt}
         ],
         max_tokens=4000,
