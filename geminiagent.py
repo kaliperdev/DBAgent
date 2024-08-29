@@ -81,10 +81,8 @@ def extract_query_from_message(content):
         query_part = content.split("Generated SQL Query:", 1)[1].strip()
         
         # Handle queries enclosed in triple backticks
-        if query_part.startswith("```sql") and query_part.endswith("```"):
-            return query_part[6:-3].strip()
-        elif query_part.startswith("```") and query_part.endswith("```"):
-            return query_part[3:-3].strip()
+        # Remove any triple backticks and surrounding whitespace
+        query_part = query_part.replace("```sql", "").replace("```", "").strip()
         
         # Plain query after the "Generated SQL Query:" string
         return query_part
