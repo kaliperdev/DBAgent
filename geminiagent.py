@@ -86,7 +86,7 @@ def extract_query_from_message(content):
         
         # Plain query after the "Generated SQL Query:" string
         return query_part
-    return content
+    return query_part
 
 def generate_chart_code(dataframe):
     if isinstance(dataframe, pd.DataFrame):
