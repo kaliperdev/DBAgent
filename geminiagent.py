@@ -80,13 +80,13 @@ def extract_query_from_message(content):
     if "Generated SQL Query:" in content:
         query_part = content.split("Generated SQL Query:", 1)[1].strip()
         
-        # Handle queries enclosed in triple backticks
         # Remove any triple backticks and surrounding whitespace
         query_part = query_part.replace("```sql", "").replace("```", "").strip()
-        
-        # Plain query after the "Generated SQL Query:" string
+
+        # Return the cleaned query
         return query_part
-    #return query_part
+    return content
+
 
 def generate_chart_code(dataframe):
     if isinstance(dataframe, pd.DataFrame):
