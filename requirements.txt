@@ -6,3 +6,4 @@ snowflake-connector-python
 plotly
 tiktoken
 pyairtable
+google-generativeai
