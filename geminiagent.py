@@ -1,34 +1,30 @@
 import pandas as pd
+import google.generativeai as genai
 import streamlit as st
 import os
 import snowflake.connector
 import plotly.express as px
-import tiktoken
 import re
 from plotly.subplots import make_subplots
 import plotly.graph_objs as go
-import requests
-
-from gemini import GenerativeModel, GenerationConfig  # Assuming gemini is the package name
-
-# Initialize your model
-gemini_model = GenerativeModel("gemini-gpt-4")  # Replace with the correct MODEL_ID
 
 # Ensure session state is initialized at the very beginning
 if 'messages' not in st.session_state:
     st.session_state.messages = []
+
 # Check and prompt for Snowflake credentials
 SNOWFLAKE_PASSWORD = st.secrets.credentials.sf_password
-print(st.secrets.credentials.sf_password)
-#Put user and account in ST environment
-
 SNOWFLAKE_USER = "DATAINTEGRITY_KALIPER"
-#SNOWFLAKE_ACCOUNT = "zt30947.us-east-2.aws.snowflakecomputing.com"
 SNOWFLAKE_ACCOUNT = "jsgkebp-cn71497"
 SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
 SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
 SNOWFLAKE_ROLE = "RUDDER"
-gemini_api_key = "AIzaSyCl9G0JmmxkiUDbJg0GWSe_MJt-QWOanDs"
+
+# Configure Gemini API key
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+
+# Initialize your Gemini model
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 def execute_query(query):
     try:
@@ -36,7 +32,7 @@ def execute_query(query):
             user=SNOWFLAKE_USER,
             password=SNOWFLAKE_PASSWORD,
             account=SNOWFLAKE_ACCOUNT,
-            database = SNOWFLAKE_DATABASE,
+            database=SNOWFLAKE_DATABASE,
             warehouse=SNOWFLAKE_WAREHOUSE,
             role=SNOWFLAKE_ROLE,
         )
@@ -60,24 +56,13 @@ def generate_sql(conversation):
     {conversation}
     """
 
-    generation_config = GenerationConfig(
-        max_tokens=4000,
-        temperature=0.5
-    )
-
-    # Generate content using Gemini
-    model_response = gemini_model.generate_content(
-        [{"role": "system", "content": "You are a Snowflake Expert that generates SQL queries."},
-         {"role": "user", "content": prompt}],
-        generation_config,
-        safety_settings={}
-    )
+    response = model.generate_content(prompt)
     
-    return model_response['choices'][0]['message']['content'].strip()
+    return response.text.strip()
 
 def handle_error(query, error):
     prompt = f"""
-    Given the following SQL, and the error from Snowflake, along with user conversation. Resolve this. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response
+    Given the following SQL, and the error from Snowflake, along with user conversation. Resolve this. Also add 'Generated SQL Query:' term just before sql query to identify, don't add any other identifier like 'sql' or '`' in response.
     Error:
     {error}
     Code:
@@ -86,14 +71,9 @@ def handle_error(query, error):
     {conversation}
     """
 
-    model_response = gemini_model.generate_content(
-        [{"role": "system", "content": "You are a Snowflake Expert that generates SQL queries."},
-         {"role": "user", "content": prompt}],
-        generation_config,
-        safety_settings={}
-    )
+    response = model.generate_content(prompt)
     
-    return model_response['choices'][0]['message']['content'].strip()
+    return response.text.strip()
 
 def extract_query_from_message(content):
     if "Generated SQL Query:" in content:
@@ -118,18 +98,9 @@ def generate_chart_code(dataframe):
         Data to be plotted:
         {dataframe_str}
         """
-        data = {
-            "model": "gemini-gpt-4",  # Replace with Gemini equivalent model
-            "messages": [
-                {"role": "system", "content": "You are an expert in data visualization using Plotly."},
-                {"role": "user", "content": prompt}
-            ],
-            "max_tokens": 4000,
-            "temperature": 0.5,
-        }
 
-        response = requests.post("https://api.gemini.com/v1/completions", headers=headers, json=data)
-        return response.json()['choices'][0]['message']['content'].strip()
+        response = model.generate_content(prompt)
+        return response.text.strip()
     else:
         raise ValueError("The input is not a valid pandas DataFrame")
 
@@ -140,7 +111,7 @@ def extract_code_from_response(response):
         return code_block.group(1).strip()
     return ""
 
-if gemini_api_key:
+if os.environ.get("GEMINI_API_KEY"):
     # Load schema CSV
     schema_file_path = 'Schema.csv'
     schema_df = pd.read_csv(schema_file_path)
@@ -178,7 +149,6 @@ if gemini_api_key:
                 chart_code_response = generate_chart_code(result)
                 st.write("### Chart Code Response")
                 chart_code = extract_code_from_response(chart_code_response)
-                #st.code(chart_code, language='python')
                 
                 try:
                     # Define the local scope for exec to capture the figure
@@ -206,7 +176,6 @@ if gemini_api_key:
                     chart_code_response = generate_chart_code(result)
                     st.write("### Chart Code Response")
                     chart_code = extract_code_from_response(chart_code_response)
-                    #st.code(chart_code, language='python')
                     
                     try:
                         # Define the local scope for exec to capture the figure
