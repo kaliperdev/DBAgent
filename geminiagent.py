@@ -85,7 +85,7 @@ def extract_query_from_message(content):
 
         # Return the cleaned query
         return query_part
-    return content
+    return content.replace("```sql", "").replace("```", "").strip()
 
 
 def generate_chart_code(dataframe):
