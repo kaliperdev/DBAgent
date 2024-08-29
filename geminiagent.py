@@ -78,7 +78,7 @@ def handle_error(query, error):
 
 def extract_query_from_message(content):
     if "Generated SQL Query:" in content:
-        query_part = content.split("**Generated SQL Query:**", 1)[1].strip()
+        query_part = content.split("Generated SQL Query:", 1)[1].strip()
         
         # Handle queries enclosed in triple backticks
         if query_part.startswith("```sql") and query_part.endswith("```"):
