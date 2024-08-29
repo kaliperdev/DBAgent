@@ -8,6 +8,12 @@ import re
 from plotly.subplots import make_subplots
 import plotly.graph_objs as go
 import requests
+
+from gemini import GenerativeModel, GenerationConfig  # Assuming gemini is the package name
+
+# Initialize your model
+gemini_model = GenerativeModel("gemini-gpt-4")  # Replace with the correct MODEL_ID
+
 # Ensure session state is initialized at the very beginning
 if 'messages' not in st.session_state:
     st.session_state.messages = []
@@ -53,25 +59,21 @@ def generate_sql(conversation):
     Conversation:
     {conversation}
     """
-    # Adjust to Gemini's API request format
-    headers = {
-        "Authorization": f"Bearer {gemini_api_key}",
-        "Content-Type": "application/json"
-    }
 
-    data = {
-        "model": "gemini-gpt-4",  # Replace with Gemini equivalent model
-        "messages": [
-            {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries."},
-            {"role": "user", "content": prompt}
-        ],
-        "max_tokens": 4000,
-        "temperature": 0.5,
-    }
+    generation_config = GenerationConfig(
+        max_tokens=4000,
+        temperature=0.5
+    )
 
-    # Assuming a requests-like interface
-    response = requests.post("https://api.gemini.com/v1/completions", headers=headers, json=data)
-    return response.json()['choices'][0]['message']['content'].strip()
+    # Generate content using Gemini
+    model_response = gemini_model.generate_content(
+        [{"role": "system", "content": "You are a Snowflake Expert that generates SQL queries."},
+         {"role": "user", "content": prompt}],
+        generation_config,
+        safety_settings={}
+    )
+    
+    return model_response['choices'][0]['message']['content'].strip()
 
 def handle_error(query, error):
     prompt = f"""
@@ -83,18 +85,15 @@ def handle_error(query, error):
     Conversation:
     {conversation}
     """
-    data = {
-        "model": "gemini-gpt-4",  # Replace with Gemini equivalent model
-        "messages": [
-            {"role": "system", "content": "You are a Snowflake Expert that generates SQL queries."},
-            {"role": "user", "content": prompt}
-        ],
-        "max_tokens": 4000,
-        "temperature": 0.5,
-    }
 
-    response = requests.post("https://api.gemini.com/v1/completions", headers=headers, json=data)
-    return response.json()['choices'][0]['message']['content'].strip()
+    model_response = gemini_model.generate_content(
+        [{"role": "system", "content": "You are a Snowflake Expert that generates SQL queries."},
+         {"role": "user", "content": prompt}],
+        generation_config,
+        safety_settings={}
+    )
+    
+    return model_response['choices'][0]['message']['content'].strip()
 
 def extract_query_from_message(content):
     if "Generated SQL Query:" in content:
