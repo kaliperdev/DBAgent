@@ -21,7 +21,7 @@ SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
 SNOWFLAKE_ROLE = "RUDDER"
 
 # Configure Gemini API key
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+genai.configure(api_key="AIzaSyCl9G0JmmxkiUDbJg0GWSe_MJt-QWOanDs")
 
 # Initialize your Gemini model
 model = genai.GenerativeModel('gemini-1.5-flash')
