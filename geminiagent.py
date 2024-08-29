@@ -111,7 +111,7 @@ def extract_code_from_response(response):
         return code_block.group(1).strip()
     return ""
 
-if os.environ.get("GEMINI_API_KEY"):
+if genai.api_key:
     # Load schema CSV
     schema_file_path = 'Schema.csv'
     schema_df = pd.read_csv(schema_file_path)
