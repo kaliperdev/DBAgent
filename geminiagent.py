@@ -20,6 +20,7 @@ SNOWFLAKE_DATABASE = "RUDDER_EVENTS"
 SNOWFLAKE_WAREHOUSE = "RUDDER_WAREHOUSE"
 SNOWFLAKE_ROLE = "RUDDER"
 
+genai_api_key="AIzaSyCl9G0JmmxkiUDbJg0GWSe_MJt-QWOanDs"
 # Configure Gemini API key
 genai.configure(api_key="AIzaSyCl9G0JmmxkiUDbJg0GWSe_MJt-QWOanDs")
 
@@ -111,7 +112,7 @@ def extract_code_from_response(response):
         return code_block.group(1).strip()
     return ""
 
-if genai.api_key:
+if genai_api_key:
     # Load schema CSV
     schema_file_path = 'Schema.csv'
     schema_df = pd.read_csv(schema_file_path)
