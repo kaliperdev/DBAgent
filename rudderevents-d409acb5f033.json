@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "rudderevents",
+  "private_key_id": "d409acb5f033a6130a53ccd5accc85a48b27d0d7",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCuC3nNpNxlA2xd\nur15kETTtN0SytexVOQOQ1WF+EBaklE06Fh4eFS8PlkcJpPBH509zE1T+600zsG/\nooO98FUGPZ8BhWmCh7gUfIzV6Rc0NRUREG2eV4AFmiwm9LMCi2vcdsxqVyTeQI0j\nsijTEX46h5QaSshtlmWWGOWH9d6m7rHbU+3+DXN7zOHoUAHy3/MnXlASC3N6ont8\nbSBmxWLdTkgWB8iwozIHmGuyXme/6OplGMuSgU4noFAf3wna8jenri+UFkuMBuf0\nB3oASgXLbZv2pDdEUzb5rdu4dl2QGBRVhLhlbJdi8lCFhwNHAdMlGUHIjB6uzjdM\nf5EJSeC7AgMBAAECggEADD8jeXxtw6/berbuqTSlGy6BVdavGbvK9lP3mx8uTBE6\npJnqy8NP1xUeCRSP1gmG83fCQzQU6n/X80eYtI9KNE+2thEwrO4m3k4rTMwDhXls\nu5An3nnyuLIyBCW4yOeNlexIEv2Byx/IrqfVJpD3DGBI5Ba6BrgL+uVSlWAQJDfO\nuWHMlJ41KKk0/b1Gr4t6vb3ytS6b0q9yLr37mWHt8k6QKtjuSaOvsCTSVFSF68h0\n0MgbPJg49LGAIqlzJgEEpeKw/ON8bwcWxJBeHIdn5e/HHlZRaaqPCVGbT6zT9Y7s\ngeNYxs8NaBKVekMbkBSbJqtd2UJ9L2Et+l8fOPnoLQKBgQDnASBMyiBCs867vSiA\nzAH/u324wRIJg97pLNupGLayXddcdzoRZEWt4oXeXq/Jq2tA0EPFGzTdXjVgH+Ru\ne8hEkAYqPsjsv+bnT4LbwNX3eSf1BYbWTyh6lUTCmhLou+Q+enUr/ABKpRZ0CA9N\nxGCoNykos/o19nQ01eMvYmmpnQKBgQDA4I6B16WzojISzCDY2Fyk8OB7m59Jo4jR\nZC6pOAtzjxAxvRvCpZrBzUcKnLfYtoN1Rkj2xbapox2sIDMhTOQFo6RrY+A9p7T7\n6l/GeRpgy5Y6C8PEKTZaznX/bZkvlQ//chfPkwoyFpj3AZzNO1dLVX9EGKGmccYa\nIw7C9h0wNwKBgH3WsjbCoSJU+xhwagEHoUsjYtBjdKT0Tlktk5ehG908m5YGaP6S\nZhbcYFqLsC0nEW0kRta4BGtW57KujOzWx3j6EDGxNBksTOfS+5EkkiqWuHqUgSh7\nxKxKZkOwVP6tZB/Y672DMNF47ytUPKn7gUABlI1UxcfhstoZbgIhFThNAoGANzYQ\nlQpt3GXpf4f/PxNwMabiG4AIsMOnPok28img3YtuT06ay7Ur/54LX/ZMijR0nPVp\nnXorN5QBwmvVNwsTmqmlPzhv0DZZkGMe12mDK4IblrIXb+d8L7I6BMwStZQt6Cl4\nt2qX2I6vasWDZRw/eMkYjR2f6E1ZL9IpP5XD9TECgYEAsd1kL1XBvsHbzGPm7zj9\ng0UdD8ChGiEXqR3p+pV/9mdh7ch7aAIMwIw04WiLRMaK5tV9EfNYcIp1zjx8vTuw\nnmxZhp4tIHajpUtzhgA9Uq7uAib4rqkdaY6jBMqAnm9ebxVNDPeOvpBs5STChJQo\nraRJcJ9RT5POn6ET5yaUmz8=\n-----END PRIVATE KEY-----\n",
+  "client_email": "bq-455@rudderevents.iam.gserviceaccount.com",
+  "client_id": "104795481014910421651",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/bq-455%40rudderevents.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
