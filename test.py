@@ -50,7 +50,7 @@ def generate_pseudocode(conversation, schema_info, active_schema_df):
     """Generate step-wise pseudocode for SQL generation."""
     prompt = f"""
     You are an expert at generating step-wise instructions for SQL generation. Given the active schema information below, generate human-readable instructions for the given user query in steps. 
-    Ensure the pseudocode and sql query are generated, and those makes sense of the schema, table, and column names. If a requested column, table, or schema is missing from the active list, mention this in the pseudocode, don't generate false pseudocode.
+    Ensure the pseudocode makes sense of the schema, table, and column names. If a required column, table, or schema is missing from the schema, table or column list, mention this in the pseudocode, don't generate false pseudocode.
     Schema Information:
     {schema_info}
     Conversation:
