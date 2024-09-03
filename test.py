@@ -19,8 +19,8 @@ openai.api_key = st.secrets.credentials.api_key
 personal_access_token = st.secrets.credentials.airtable_pat
 base_id = 'app4ZQ9jav2XzNIv9'  # Airtable base ID
 schema_table_id = 'tbl87TPsWhnxSnWw8'  # Airtable table ID for BQNewSchemaColumn
-bigquery_credentials_path = st.secrets.credentials.bigquery_credentials_path  # Path to your BigQuery credentials JSON file
-bigquery_project_id = st.secrets.credentials.bigquery_project_id  # Your Google Cloud project ID
+bigquery_credentials_path = "rudderevents-d409acb5f033.json"  # Path to your BigQuery credentials JSON file
+bigquery_project_id = "rudderevents"  # Your Google Cloud project ID
 
 # Initialize BigQuery client
 bigquery_client = bigquery.Client.from_service_account_json(bigquery_credentials_path)
@@ -50,13 +50,13 @@ def generate_pseudocode(conversation, schema_info, active_schema_df):
     """Generate step-wise pseudocode for SQL generation."""
     prompt = f"""
     You are an expert at generating step-wise instructions for SQL generation. Given the active schema information below, generate human-readable instructions for the given user query in steps. 
-    Ensure the pseudocode makes sense of the schema, table, and column names. If a requested column, table, or schema is missing from the active list, mention this in the pseudocode.
+    Ensure the pseudocode and sql query are generated, and those makes sense of the schema, table, and column names. If a requested column, table, or schema is missing from the active list, mention this in the pseudocode, don't generate false pseudocode.
     Schema Information:
     {schema_info}
     Conversation:
     {conversation}
     """
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are a Query Expert who generates step-wise instructions for SQL Query generation. Keep it short and accurate. Don't give SQL Query in response."},
@@ -67,55 +67,6 @@ def generate_pseudocode(conversation, schema_info, active_schema_df):
     )
     return response.choices[0].message.content.strip()
 
-def execute_query(query):
-    """Execute SQL query in BigQuery."""
-    try:
-        query_job = bigquery_client.query(query)
-        result = query_job.result().to_dataframe()  # Fetch results as a pandas DataFrame
-        return result
-    except Exception as e:
-        return str(e)
-
-def extract_query_from_message(content):
-    if "Generated SQL Query:" in content:
-        query_part = content.split("Generated SQL Query:", 1)[1].strip()
-        if query_part.startswith("```sql") and query_part.endswith("```"):
-            return query_part[6:-3].strip()
-        elif query_part.startswith("```") and query_part.endswith("```"):
-            return query_part[3:-3].strip()
-        return query_part
-    return content
-
-def generate_chart_code(dataframe):
-    if isinstance(dataframe, pd.DataFrame):
-        columns_list = ', '.join(dataframe.columns)
-        dataframe_str = dataframe.to_string()
-        prompt = f"""
-        You are an expert in data visualization. Given a pandas DataFrame with the following columns: {columns_list}, generate the best charting code using Plotly. The code should produce an informative and visually appealing chart.
-        Data to be plotted:
-        {dataframe_str}
-        """
-        full_prompt = [
-            {"role": "system", "content": "You are an expert in data visualization using Plotly. Use brand colors and create professional and appealing charts."},
-            {"role": "user", "content": prompt}
-        ]
-        response = openai.ChatCompletion.create(
-            model="gpt-4o",
-            messages=full_prompt,
-            max_tokens=4000,
-            temperature=0.5,
-            n=1,
-            stop=None
-        )
-        return response.choices[0].message.content.strip()
-    else:
-        raise ValueError("The input is not a valid pandas DataFrame")
-
-def extract_code_from_response(response):
-    code_block = re.search(r'```python(.*?)```', response, re.DOTALL)
-    if code_block:
-        return code_block.group(1).strip()
-    return ""
 
 # Load schema from Airtable once when the application starts
 schema_df = load_data(personal_access_token, base_id, schema_table_id)
