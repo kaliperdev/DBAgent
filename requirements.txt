@@ -7,3 +7,4 @@ plotly
 tiktoken
 pyairtable
 google-generativeai
+google-cloud-bigquery
